@@ -15,6 +15,7 @@ export const HERO = {
   micro: "Built for the way Indian clinics actually work.",
   floatingCard: { label: "Sample message", body: "Token #14 confirmed. Dr. Mehta, 4:15 PM. Please reach 10 minutes early." },
   aliveBadge: "Aria is online 24/7",
+  scrollCue: "Scroll", // affordance label for the thin below-the-fold hint
 };
 
 export const PROBLEM = {
