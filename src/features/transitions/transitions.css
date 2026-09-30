@@ -1,0 +1,120 @@
+/* ------------------------------------------------------------------
+   Phase 1 transitions + chrome styles.
+   Only the classes that are NOT already in src/styles/index.css live here.
+   Reused as-is from index.css: .stairs, .stair, .glass, .chip[data-status],
+   .stage, .orb, .sr-only and the global prefers-reduced-motion switch.
+------------------------------------------------------------------ */
+
+/* Route label that sits on top of the covering bars. The overlay is a flex row
+   of five bars, so the label is taken out of flow and centred over them. */
+.stairs-label {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  pointer-events: none;
+  color: var(--color-cream-100);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  opacity: 0;
+}
+.stairs .stair { position: relative; z-index: 0; }
+
+/* Full-screen menu: its own bar stage (z-80, under the route overlay's z-90).
+   The bars reuse .stair from index.css, so only the resting height differs.
+   GSAP writes an inline height, which always beats a class. */
+.menu-stairs {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  pointer-events: none;
+}
+.menu-stair { height: 0; }
+
+/* Everything the visitor can read/touch sits above the bars. */
+.menu-panel { position: relative; z-index: 1; }
+
+/* Menu rows. The 3D flip is set up by GSAP (rotateX 90 -> 0); the CSS only
+   provides the initial state and the perspective. */
+.menu-link {
+  opacity: 0;
+  transform: rotateX(90deg);
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+.menu-list { perspective: 900px; }
+
+/* One row of the menu. The label is Instrument Serif cream; the hover band covers
+   it with peach-400 and streams the marquee past. */
+.menu-row {
+  border-top: 1px solid rgb(247 244 233 / 0.15);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Small light-glass chips inside the band. */
+.menu-chip {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* The dialog itself. display is driven by data-open so the open/close timelines
+   always have a mounted element to animate (mirrors .stairs[data-active]). */
+.menu-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  flex-direction: column;
+  background: var(--color-teal-950);
+  color: var(--color-cream-100);
+}
+.menu-dialog[data-open="true"] { display: flex; }
+
+/* Menu button: two right-aligned lines whose colour follows the section behind it. */
+.menu-button .menu-button-line { background: var(--color-cream-100); }
+.menu-button[data-nav-theme="light"] .menu-button-line { background: var(--color-teal-950); }
+.menu-button[data-nav-theme="dark"] .menu-button-line { background: var(--color-cream-100); }
+.menu-button:hover .menu-button-line,
+.menu-button:focus-visible .menu-button-line { background: var(--color-teal-950); }
+
+/* Hover band: peach in-fill with a marquee. Desktop pointers only. It sits above
+   the static label, so hovering a row replaces its content with the ticker. */
+.menu-band {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  align-items: center;
+  overflow: hidden;
+  background: var(--color-peach-400);
+  color: var(--color-teal-950);
+  opacity: 0;
+  transition: opacity 220ms var(--ease-out-soft);
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .menu-band { display: flex; }
+  .menu-row:hover .menu-band,
+  .menu-row:focus-within .menu-band { opacity: 1; }
+}
+
+.marquee { animation: marquee-move 10s linear infinite; }
+@keyframes marquee-move {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}

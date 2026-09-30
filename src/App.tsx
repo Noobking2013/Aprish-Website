@@ -1,21 +1,16 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
+import { Footer } from "@/features/chrome/Footer";
+import { Navbar } from "@/features/chrome/Navbar";
+import { SkipLink } from "@/features/chrome/SkipLink";
+import { FullScreenMenu } from "@/features/transitions/FullScreenMenu";
+import { BlackRoute, LiveRoute } from "@/features/transitions/routes";
+import { TransitionProvider } from "@/features/transitions/TransitionProvider";
 import { HomePage } from "@/pages/HomePage";
-import { ProductPage } from "@/pages/ProductPage";
 import { JoinPage } from "@/pages/JoinPage";
-import { PrivacyPage } from "@/pages/PrivacyPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
-
-/**
- * /live (canvas glass wall) and /black are split out of the initial bundle so the
- * heaviest routes never ship to visitors who do not open them.
- */
-const LivePage = lazy(() =>
-  import("@/pages/LivePage").then((module) => ({ default: module.LivePage })),
-);
-const BlackPage = lazy(() =>
-  import("@/pages/BlackPage").then((module) => ({ default: module.BlackPage })),
-);
+import { PrivacyPage } from "@/pages/PrivacyPage";
+import { ProductPage } from "@/pages/ProductPage";
 
 function RouteFallback() {
   return (
@@ -25,18 +20,34 @@ function RouteFallback() {
   );
 }
 
+/**
+ * Layout contract (docs/05_TRANSITIONS_SPEC.md):
+ * - nav, the menu and the stairs overlay live OUTSIDE #route-root, so they are not
+ *   scaled by the page-enter tween and are not wiped when the route swaps;
+ * - the footer lives INSIDE #route-root, so it belongs to the page that mounted it.
+ */
 export function App() {
   return (
-    <Suspense fallback={<RouteFallback />}>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/product" element={<ProductPage />} />
-        <Route path="/live" element={<LivePage />} />
-        <Route path="/black" element={<BlackPage />} />
-        <Route path="/join" element={<JoinPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Suspense>
+    <TransitionProvider>
+      <SkipLink />
+      <Navbar />
+      <FullScreenMenu />
+
+      <div id="route-root">
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/product" element={<ProductPage />} />
+            <Route path="/live" element={<LiveRoute />} />
+            <Route path="/black" element={<BlackRoute />} />
+            <Route path="/join" element={<JoinPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+        <Footer />
+      </div>
+    </TransitionProvider>
   );
 }
+

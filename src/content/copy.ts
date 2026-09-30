@@ -3,7 +3,7 @@
  * RULE: every sentence must be true today. Feature claims are tied to a FeatureKey so the
  * status chip can never disagree with the text. See docs/03_CONTENT_AND_CLAIMS.md.
  */
-import type { FeatureKey } from "./status";
+import { STATUS_LABEL, type FeatureKey, type Status } from "./status";
 
 export const HERO = {
   tagline: "No app download  ·  24/7 WhatsApp booking  ·  Built for Indian clinics",
@@ -174,4 +174,112 @@ export const CHAT_DEMO = {
       keywords: [{ match: /prescri|medicine|rx/i, option: 0 }, { match: /follow|review|next visit/i, option: 1 }],
     },
   ] as ChatScript[],
+};
+
+/* ------------------------------------------------------------------
+   GLOBAL CHROME COPY (added in Phase 1)
+   Nav, full-screen menu and footer labels. The short route names used by the
+   stairs overlay and the screen-reader announcement live in
+   src/features/transitions/routes.ts — those are deliberately shorter
+   ("Live bookings") than the menu row label ("Live wall"). Keep both in sync
+   if the wording changes.
+------------------------------------------------------------------ */
+
+export const NAV = {
+  skipToContent: "Skip to content",
+  brandLink: "Aprish, back to home",
+  openMenu: "Open menu",
+  closeMenu: "Close menu",
+  menuDialogLabel: "Menu",
+  primaryNavLabel: "Primary",
+  joinCta: HERO.ctaSecondary, // "Join the beta"
+};
+
+export interface MenuChip {
+  label: string;
+  /** When set, the chip renders with the real .chip[data-status] styles. */
+  status?: Status;
+  /** Fictional demo data must say so. See PROJECT_RULES.md. */
+  sample?: boolean;
+}
+
+export interface MenuLink {
+  to: string;
+  label: string;
+  marquee: string;
+  chips: MenuChip[];
+}
+
+export const MENU = {
+  links: [
+    {
+      to: "/",
+      label: "Home",
+      marquee: "Back to the start",
+      chips: [{ label: "Aria · online" }],
+    },
+    {
+      to: "/product",
+      label: "Product",
+      marquee: "Modules, safety, ROI",
+      chips: [
+        { label: STATUS_LABEL.live, status: "live" as Status },
+        { label: STATUS_LABEL.building, status: "building" as Status },
+        { label: STATUS_LABEL.planned, status: "planned" as Status },
+      ],
+    },
+    {
+      to: "/live",
+      label: "Live wall",
+      marquee: "Watch bookings land",
+      chips: [
+        { label: "Sample", sample: true },
+        { label: "Token #14 ✓" },
+        { label: "Dr. Rao 3:30 PM" },
+      ],
+    },
+    {
+      to: "/black",
+      label: "Aprish Black",
+      marquee: "A trust-mark, coming",
+      chips: [{ label: STATUS_LABEL.planned, status: "planned" as Status }],
+    },
+    {
+      to: "/join",
+      label: "Join the beta",
+      marquee: "Claim a pilot spot",
+      chips: [{ label: "WhatsApp" }],
+    },
+  ] as MenuLink[],
+  separatorLabel: "star",
+};
+
+export interface FooterLink {
+  label: string;
+  /** Internal routes only. External links are rendered from config.waLink(). */
+  to: string;
+}
+
+export const FOOTER = {
+  wordmark: "aprish",
+  whatsappLabel: "Chat with Aria on WhatsApp",
+  copyrightName: "Aprish",
+  groups: [
+    {
+      title: "Product",
+      links: [
+        { label: "Product", to: "/product" },
+        { label: "Live wall", to: "/live" },
+        { label: "Aprish Black", to: "/black" },
+      ] as FooterLink[],
+    },
+    {
+      title: "Company",
+      links: [{ label: "Join the beta", to: "/join" }] as FooterLink[],
+    },
+    {
+      title: "Legal",
+      links: [{ label: "Privacy", to: "/privacy" }] as FooterLink[],
+    },
+  ],
 };
