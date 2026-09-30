@@ -54,7 +54,7 @@ Section order, background, and what each contains. Copy keys are in `src/content
 - Numbered (01 to 05) because it is a true sequence.
 
 ### 4. Try Aria: the phone (`.stage` teal-950, `.on-dark`)
-- Two columns. Left: H2 "Book an appointment at 9:41 PM, while the clinic is closed." Supporting line, the four script tabs (`CHAT_DEMO.scripts`), a **"Open the real Aria" button** (`waLink()`) and the QR image with caption "Scan to chat with Aria". Note line `CHAT_DEMO.note`.
+- Two columns. Left: H2 "Book an appointment at any hour, even when the clinic is closed." (plain, no emphasis; see docs/09 D2), supporting line (`DEMO.sub`, which already says the conversation is a scripted illustration), the four script tabs (`CHAT_DEMO.scripts`) each with its status chip, a **"Open the real Aria" button** (`waLink()`) and the QR image with caption "Scan to chat with Aria". `CHAT_DEMO.note` is rendered **on the phone only** (docs/09 D1), not repeated here.
 - Right: the phone (doc 06). Behind it: orbs. The phone header is `.glass`.
 
 ### 5. The safety model (cream-200)

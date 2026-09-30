@@ -63,14 +63,14 @@ All text comes from `CHAT_DEMO` in `src/content/copy.ts` (4 scripts: Book a visi
 4. **Free typing**: the composer is a real `<input>`. On submit, test the text against `script.keywords` (regex); a match plays that option; no match replies with `CHAT_DEMO.fallback` and shows a WhatsApp button (`waLink()`).
 5. **Confirmation bubbles** (`kind: "confirmation"`): styled as a card with a peach left tick icon, Space Mono token number, and "Confirmed" chip.
 6. Message list auto-scrolls to the newest message (`scrollTo({top, behavior})`, instant when reduced motion). Message area has `role="log" aria-live="polite"`.
-7. Footer strip inside the phone: `CHAT_DEMO.note` (small, `teal-600`).
+7. Footer strip ("chin") on the phone's pastel frame `#ecf1df`: `CHAT_DEMO.note`, `teal-600` (4.67:1 there). This is the only place the note appears (docs/09 D1).
 
 ### Visual spec (the approved theme look, improved)
 - Outer bezel: `#102d2d`, 6px, radius 2.35rem, `.phone-shadow`, width 360px (max), subtle `.floating` bob (6s, +/-9px, +/-1deg). Bob is disabled under reduced motion and paused when off-screen.
 - Status bar: `9:41`, signal/battery glyphs (Space Mono, tiny).
-- Header: `.glass`-tinted strip on the stage. Avatar = `logo-on-dark.png` on a `teal-900` circle with a `peach-400` online dot (`pulse-dot`). Title "Aria · Aprish", subtitle "online".
-- Body background `#e5ecdc` with a very faint doodle-free pattern (none). Bubbles: Aria = `#f7f6ea` with 1px `teal-900/10` border, radius 18px with bottom-left 4px; patient = `peach-400`-ish `#d89361` fill, `teal-900` text, bottom-right 4px. Timestamps in bubbles ("4:12 PM", Space Mono 9px) and WhatsApp-style ticks: one grey tick sent, two ticks read.
-- **Contrast fixes**: the original used `#77918a` on `#e5ecdc` (2.8:1) and `#91a39a` placeholders (2.4:1). Use `#52706d` (4.6:1 or better) for all small labels and placeholders.
+- Header: `.glass` blur and rim, but with an explicit dark tint (`bg-teal-950/95`, sheen off), because inside the phone the backdrop is the cream body and the default glass tint would put cream text at about 1.6:1. Measure the composite; it must be 4.5:1 or better. Avatar = `logo-on-dark.png` on a `teal-900` circle with a `peach-400` online dot (`pulse-dot`). Title "Aria · Aprish", subtitle "online".
+- Body background `#e5ecdc` with a very faint doodle-free pattern (none). Bubbles: Aria = `#f7f6ea` with 1px `teal-900/10` border, radius 18px with bottom-left 4px; patient = `peach-400`-ish `#d89361` fill, `teal-900` text, bottom-right 4px. Timestamps in bubbles (`CHAT_DEMO.time` = "2:40 PM", Space Mono 9px; the status-bar clock shows the same 2:40, never 9:41, so every time in the demo agrees with "today 4:15 PM") and WhatsApp-style ticks: one grey tick sent, two ticks read.
+- **Contrast fixes** (numbers re-measured, an earlier version of this line was wrong): the original used `#77918a` on `#e5ecdc` (2.8:1) and `#91a39a` placeholders (2.4:1). On the chat body `#e5ecdc`, `teal-600` is only 4.46:1, so use `teal-700` `#35625d` (5.68:1) for all small labels and placeholders there. `teal-600` is fine on the frame `#ecf1df` (4.67:1) and on cream. Patient bubble `teal-900` on `#d89361` is 4.67:1.
 - Chips: `#f7f6ea`, 1px border, radius pill, 11px text, hover raises 1px only on desktop.
 - Typing indicator: three bouncing dots (`.typing-bubble` in the original CSS).
 

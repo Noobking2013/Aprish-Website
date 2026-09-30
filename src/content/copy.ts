@@ -105,19 +105,61 @@ export const BETA = {
   fallbackNote: "Prefer to talk now? Message Aria on WhatsApp.",
 };
 
+/* ------------------------------------------------------------------
+   HOME, SECTION 4: TRY ARIA (docs/02 "Home 4", docs/06 section B)
+
+   The phone's own labels live in CHAT_DEMO below. The H2 is plain: serif italic
+   emphasis is hero-only (docs/01, docs/09 D3). The clock and the bubble timestamps
+   are 2:40 / 2:40 PM so every time in the demo agrees with the scripts, which offer
+   "today 4:15 PM" (docs/09 D2).
+------------------------------------------------------------------- */
+export const DEMO = {
+  h2: "Book an appointment at any hour, even when the clinic is closed.",
+  sub: "Aria answers on WhatsApp at any hour, checks the real schedule and locks the slot. The conversation below is a scripted illustration.",
+  tabsLabel: "Choose a script",
+  openRealAria: "Open the real Aria",
+  qrCaption: "Scan to chat with Aria",
+  qrAlt: "QR code that opens the Aria chat on WhatsApp",
+};
+
 /* ---------- Phone demo scripts (simulated, NOT the live model) ---------- */
 export type ChatMsg = { from: "aria" | "user"; text: string; kind?: "text" | "confirmation" };
 export interface ChatOption { label: string; replies: ChatMsg[] }
 export interface ChatScript {
-  id: string; tab: string; intro: ChatMsg[]; options: ChatOption[]; keywords: Array<{ match: RegExp; option: number }>;
+  id: string;
+  tab: string;
+  /**
+   * The module this script depicts. It drives the tab's status chip from
+   * src/content/status.ts, so a script for a feature that is not confirmed live reads
+   * "In development" instead of implying it works today (docs/09 D8).
+   */
+  feature: FeatureKey;
+  intro: ChatMsg[];
+  options: ChatOption[];
+  keywords: Array<{ match: RegExp; option: number }>;
 }
 
 export const CHAT_DEMO = {
   note: "Interactive demo. Replies are scripted; the real Aria is on WhatsApp.",
   fallback: "That is beyond this demo. Message the real Aria on WhatsApp to try anything.",
+  /* Device chrome and in-app labels (docs/06, section B). */
+  clock: "2:40",
+  battery: "\u25c2\u2585\u2586 84%",
+  time: "2:40 PM",
+  header: { title: "Aria \u00b7 Aprish", status: "online" },
+  today: "Today",
+  logLabel: "Conversation",
+  typing: "Aria is typing",
+  tryLabel: "Try a message",
+  placeholder: "Type a message to the demo",
+  send: "Send",
+  sent: "Sent",
+  read: "Read",
+  confirmed: "Confirmed",
   scripts: [
     {
       id: "book", tab: "Book a visit",
+      feature: "bookingViaWhatsApp",
       intro: [{ from: "aria", text: "Hi, I\u2019m Aria. What can I help you with today?" }],
       options: [
         { label: "I need to see a dermatologist", replies: [
@@ -134,6 +176,7 @@ export const CHAT_DEMO = {
     },
     {
       id: "reschedule", tab: "Reschedule",
+      feature: "bookingViaWhatsApp",
       intro: [{ from: "aria", text: "Hello Riya. You have an appointment with Dr. Mehta today at 4:15 PM." }],
       options: [
         { label: "Can I change my appointment?", replies: [
@@ -150,6 +193,7 @@ export const CHAT_DEMO = {
     },
     {
       id: "queue", tab: "Track the queue",
+      feature: "queueCheckIn",
       intro: [{ from: "aria", text: "You\u2019re checked in, Riya. Ask me anything about your turn." }],
       options: [
         { label: "How much longer?", replies: [
@@ -163,6 +207,7 @@ export const CHAT_DEMO = {
     },
     {
       id: "rx", tab: "Prescription",
+      feature: "digitalRx",
       intro: [{ from: "aria", text: "Hi Riya, hope the consultation went well." }],
       options: [
         { label: "Send my prescription", replies: [

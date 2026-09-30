@@ -91,6 +91,9 @@ Band text is `teal-950` on peach (5.6:1). Separator between repeats is the gold 
 ### Menu button (corner, top-right, flush to the corner)
 `glass` panel, 56px tall x 168px wide desktop (44x120 mobile), bottom-left corner radius 28px. Two right-aligned 2px lines (60% and 36% width). On hover a `peach-400` fill grows from the top (`height 0 → 100%`, 300ms) and the lines go `teal-950`. `aria-expanded`, `aria-controls`. Line colour follows `data-nav-theme` of the section underneath.
 
+## Navbar theme rule
+`data-nav-theme="dark|light"` goes on **sections** (or, on single-section pages such as `/live` and `/black`, on the page's one inner wrapper), **never on `<main>` or `#route-root`**. The observer picks the first intersecting element in document order, so a wrapper that always intersects the top of the page pins the navbar to one theme for the whole page.
+
 ## Acceptance checks
 - [ ] Clicking any internal link: bars cover, page swaps unseen, bars step away, new page scales in. No flash of the new page during the cover.
 - [ ] Lazy routes (`/live`, `/black`) never show a Suspense fallback during the reveal.

@@ -17,6 +17,8 @@
 - [ ] Direct URL load of `/live`, `/black`, `/join` works after `npm run build && npm run preview` (SPA fallback configured on the host).
 
 ## Motion and interaction
+- [ ] No `data-nav-theme` on any `<main>`; the navbar flips theme as dark and light sections pass beneath it.
+- [ ] Every time shown in the chat demo agrees with every other (status bar, bubble timestamps, "today 4:15 PM").
 - [ ] Transition acceptance (doc 05), wall acceptance (doc 04), dots and phone acceptance (doc 06).
 - [ ] Reduced motion: no stairs, no drift, no dot shimmer, no autoplay chat; content still fully usable.
 - [ ] Tab order is logical; every interactive element has a visible focus ring; menu and wall dialog trap focus and restore it.

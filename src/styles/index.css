@@ -28,6 +28,12 @@
   --color-tint-blush:    #f1d7d0;
   --color-tint-parchment:#e9e1d1;
 
+  /* Phone demo surfaces (docs/06, section B: the literal colours of the reference) */
+  --color-phone-frame: #ecf1df;   /* bezel inset + composer strip */
+  --color-phone-body:  #e5ecdc;   /* chat background */
+  --color-bubble-cream:#f7f6ea;   /* Aria's bubbles */
+  --color-bubble-peach:#d89361;   /* the patient's bubbles */
+
   --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
   --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -75,6 +81,8 @@
   .chip[data-status="building"] { background: var(--color-tint-sand);     color: #7a4a22; }
   .chip[data-status="planned"]  { background: var(--color-tint-lavender); color: #4b4463; }
   .chip[data-status="tbc"]      { background: #ecebe4;                    color: #55605b; }
+  /* Booking confirmations inside the phone demo (docs/06, section B). Same mint as "live". */
+  .chip[data-status="confirmed"] { background: var(--color-tint-mint);    color: #1f5b45; }
 
   /* ---------------- Apple-style glass ----------------
      .glass        : hero glass, for DARK stages (wall, nav, phone section)
@@ -132,6 +140,31 @@
   .orb--gold  { background: var(--color-gold-400); opacity: 0.35; animation-duration: 34s; animation-delay: -9s; }
   .orb--teal  { background: #3f8f86; animation-duration: 31s; animation-delay: -4s; }
   .orb--lav   { background: #9d8fae; opacity: 0.3; animation-duration: 38s; animation-delay: -14s; }
+
+  /* ------------------------------ Phone (docs/06, section B) ------------------------------ */
+  /* The reference shadow is tuned for a cream page; on the teal-950 stage the phone needs a
+     deep drop plus a faint warm halo to read as lit from above. */
+  .phone-shadow {
+    box-shadow:
+      0 30px 70px -22px rgb(3 20 20 / 0.7),
+      0 0 50px -14px rgb(234 163 115 / 0.25);
+  }
+
+  /* Aria is typing: three bouncing dots (reference .typing-bubble, recoloured to teal-700). */
+  .typing-bubble { display: flex; align-items: center; gap: 4px; min-height: 38px; }
+  .typing-bubble span { width: 5px; height: 5px; border-radius: 999px; background: var(--color-teal-700); animation: typing-bounce 1s ease-in-out infinite; }
+  .typing-bubble span:nth-child(2) { animation-delay: 0.14s; }
+  .typing-bubble span:nth-child(3) { animation-delay: 0.28s; }
+
+  /* New bubbles enter. The only motion inside the phone besides the typist. */
+  .bubble-enter { animation: bubble-enter 0.28s var(--ease-out-soft); }
+
+  .chat-scroll { scrollbar-width: thin; scrollbar-color: rgb(82 112 109 / 0.4) transparent; }
+  .chat-scroll::-webkit-scrollbar { width: 4px; }
+  .chat-scroll::-webkit-scrollbar-thumb { background: rgb(82 112 109 / 0.3); border-radius: 999px; }
+
+  /* Ambient motion stops while the phone is off-screen (set by PhoneDemo's observer). */
+  .float-soft[data-paused="true"], .pulse-dot[data-paused="true"] { animation-play-state: paused; }
 
   /* Route / nav stairs (see docs/05_TRANSITIONS_SPEC.md) */
   .stairs { position: fixed; inset: 0; z-index: 90; display: none; pointer-events: none; }
@@ -196,10 +229,21 @@
   100% { transform: translateY(100%); opacity: 0; }
 }
 
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+  30%           { transform: translateY(-3px); opacity: 1; }
+}
+
+@keyframes bubble-enter {
+  from { opacity: 0.35; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
 /* Motion safety: one switch, respected everywhere. JS must also check the media query. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   .orb { animation: none; }
   .float-soft, .pulse-dot, .scroll-cue__line::after { animation: none; }
+  .typing-bubble span, .bubble-enter { animation: none; }
 }
