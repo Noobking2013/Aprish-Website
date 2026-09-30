@@ -1,0 +1,130 @@
+### 1. Hero Section
+
+* **Top Tagline:** ZERO APP DOWNLOADS • INSTANT UPI PAYMENTS • 24/7 WHATSAPP BOOKING
+* **Main Headline:** The automated front desk for high-volume care.
+* **Alternative Headline:** A 24/7 front desk that books patients and collects fees—without the chaos.
+* **Subheadline / Body:** ...handling OPD appointments, live token queues, and instant UPI fee collections inside WhatsApp—so you never lose a patient to a busy phone line.
+* **Primary CTA Button:** Automate your clinic WhatsApp →
+* **Alternative CTA Button:** Stop front-desk chaos →
+* **Hero UI Floating Card (Mockup Note):** ✅ Token #14 Confirmed! Consultation Fee ₹500 received via UPI. Please reach 10 mins before your 4:15 PM slot.
+* **Footer Micro-Copy:** Built for the way Indian clinics actually work.
+
+**Why this needed to change:**
+Replaced vague aesthetic concepts ("quiet clinic", "human warmth", staff "breathing") with hard business metrics. Indian clinic owners don't want a quiet OPD—that signals financial loss. They want high patient volume with zero administrative chaos, guaranteed advance UPI fee collection, and zero app friction.
+
+---
+
+### 2. Problem Grid ("The Noise Around Care")
+
+* **Section Headline:** Stop losing patients to front-desk chaos.
+* **Section Intro:** The phone ringing nonstop during peak OPD hours. WhatsApp inquiries going unanswered after 8 PM—sending patients to other doctors. A crowded waiting room fighting over whose turn is next. Let's fix it.
+* **Bookings Card:**
+* **Headline:** Book slots 24/7—even while you sleep.
+* **Body:** Patients book the right doctor, time slot, and clinic location directly in WhatsApp. Zero phone calls needed, zero double-booking mistakes.
+
+
+* **Payments Card:**
+* **Headline:** 100% Advance UPI Payments = Zero No-Shows.
+* **Body:** Instant UPI payment links are sent automatically upon booking. Lock in your consultation fees before the patient even walks through your door.
+
+
+* **Queue Updates Card:**
+* **Headline:** Stop waiting room arguments before they start.
+* **Body:** Live digital token numbers (#Token) and automated delay alerts sent straight to their WhatsApp. If an emergency delays you by 20 minutes, the system informs them automatically.
+
+
+* **Continuity Card:**
+* **Headline:** Automated follow-ups that bring patients back.
+* **Body:** The system automatically checks in with daily medication reminders and nudges them when it's time to book their paid course-completion follow-up.
+
+
+
+**Why this needed to change:**
+Shifted from abstract philosophical complaints ("noise around care", "awkward payments") to actual daily OPD pain points: losing patients to competitors after hours, waiting room arguments over token numbers, and unpaid appointments. Emphasizing advance UPI payments solves the massive Indian clinic no-show rate.
+
+---
+
+### 3. 6-Step Flow Slides ("No app. Just care.")
+
+* **Top Fixed Header (All Slides):** No app downloads for patients. No front-desk headaches for you. A 24/7 digital assistant inside WhatsApp that handles the busy work so you can focus on treating patients.
+* **Slide 01 (First Contact):**
+* **Headline:** 1 Desk QR Code = Zero Waiting Room Crowds.
+* **Body:** Patients scan an acrylic standee at your reception desk or message your WhatsApp number. No paper registers, no app downloads—just instant, automated check-in.
+
+
+* **Slide 02 (Bookings & Payments):**
+* **Headline:** Automated 24/7 Bookings + Instant UPI Fee Collection.
+* **Body:** Aria books the right doctor and time slot, locks in availability, and collects 100% advance consultation fees via UPI—eliminating double-bookings and stopping patient no-shows completely.
+
+
+* **Slide 03 (Smart Queue Management):**
+* **Headline:** Stop chaos before it starts.
+* **Body:** Patients get a live digital Token Number (#Token). If an emergency delays you by 30 minutes, Aria automatically shifts the schedule and alerts your waiting line on WhatsApp—keeping your waiting room calm and peaceful.
+
+
+* **Slide 04 (Records That Remember):**
+* **Headline:** Instant Digital Prescriptions & Patient History.
+* **Body:** All prescriptions, payment receipts, and past visit records are saved securely in WhatsApp. No lost paper slips, no digging through physical files when an old patient returns months later.
+
+
+* **Slide 05 (Aftercare):**
+* **Headline:** Automated Follow-ups That Drive Repeat Consultations.
+* **Body:** Aria sends automated daily medication reminders to improve patient recovery, and automatically nudges them to book their paid follow-up consultation when their course completes.
+
+
+* **Slide 06 (Patient Feedback):**
+* **Headline:** Turn Happy Patients into 5-Star Google Reviews.
+* **Body:** Aria checks in after the visit. Happy patients are automatically routed to leave a 5-star Google Review to rank your clinic #1 in your city. Unhappy feedback is caught privately on WhatsApp so you can resolve it before it hits the internet!
+
+
+
+**Why this needed to change:**
+Every feature now maps directly to a tangible return on investment. Instead of poetic descriptions ("opens a door", "thoughtful digital trail"), the text explicitly tells the doctor how it stops physical waiting room crowds, automates repeat patient revenue, eliminates manual file digging, and acts as a firewall that traps negative feedback before it hits Google Reviews.
+
+---
+
+### 4. Live Demo & Beta Onboarding Slides
+
+* **9:41 PM Screen:**
+* **Headline:** Book appointments at 9:41 PM—while your clinic is closed.
+* **Subhead:** 24/7 WHATSAPP AUTOMATION • ZERO MISSED PATIENTS
+* **Body:** Patients don't want another hospital portal. Aria engages them instantly on WhatsApp—booking slots and locking in consultation fees even after your reception desk goes home.
+
+
+* **Token Tracking Phone Screen ("How much longer?"):**
+* **UI Chat Text:** You're next after Token #03. Estimated wait: 12 minutes.
+
+
+* **Staff Energy Slide:**
+* **Headline:** Stop paying your receptionist to answer basic phone calls.
+* **Card Bullets:**
+* 18 routine questions answered while the team focused on patients.
+* 6 queue updates delivered before anyone had to ask.
+* 4 happy patients automatically directed to leave a 5-star review on Google.
+
+
+* **Button CTA:** Automate your front desk today →
+
+
+* **Final Beta Signup Section:**
+* **Top Tagline:** LIMITED BETA • FIRST 20 CLINICS ONLY
+* **Headline:** Modernize your front desk in 15 minutes.
+* **Body:** Aprish is onboarding 20 select clinics for an exclusive beta trial. Give your patients zero-wait token queues, instant UPI bookings, and automated follow-ups—all inside WhatsApp.
+* **Button CTA:** Claim Your Clinic's Spot →
+
+
+
+**Why this needed to change:**
+Highlights making money while the clinic is closed and redirecting staff salaries toward clinical assistance rather than answering basic phone inquiries. Swapped fluffy "grateful messages" for 5-star Google Review generation, which directly drives local SEO and new patient acquisition.
+
+---
+
+### 5. In-Person Pitch Hooks
+
+* **Hook 1 (No-Shows):** When patients book online and pay your ₹500 fee in advance via our automated UPI link, your no-show rate drops to near zero.
+* **Hook 2 (Reception Shield):** Patients scan one desktop QR code to check their live Token Number on their own phone, meaning they stop fighting with your receptionist over whose turn is next.
+* **Hook 3 (24/7 Booking):** If a patient gets sick at 10 PM and messages your clinic, our Digital Assistant books their slot for tomorrow morning while you are sleeping, so they don't go to another doctor.
+* **Hook 4 (Reputation):** We automatically filter your post-visit feedback: happy patients get a direct link to give you a 5-star Google review, while unhappy complaints stay private between you and the patient.
+
+**Why this needed to change:**
+These hooks are structured entirely around greed, fear of competitor loss, and operational relief. They provide immediate, bulletproof answers to the hardest financial objections clinic owners raise, proving the software pays for itself on day one.

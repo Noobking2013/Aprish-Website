@@ -1,0 +1,46 @@
+Aria
+A WhatsApp-First AI Clinic Operations Platform for Haryana
+
+
+ Sector: Healthcare                           Submitted for: Seva First Innovation Challenge 2026                                    Haryana
+
+
+
+The Problem
+Across Haryana's private and semi-urban clinics, appointment booking still runs on phone calls that go unanswered,
+WhatsApp DMs staff read late, or walk-in queues with no visibility into wait time. Patients have no way to know if a
+doctor is running late, so they either arrive on time and wait for hours, or miss their slot and struggle to reschedule.
+Clinic staff juggle registers, spreadsheets, and disconnected apps to track schedules, patient records, and prescriptions,
+with no single shared source of truth. Smaller clinics cannot afford custom software built one clinic at a time, so most
+simply go without any digital system, directly affecting quality of care and public trust in local healthcare delivery.
+
+The Solution
+Aria is a WhatsApp-first, AI-assisted clinic operations platform that needs zero app download: booking, rescheduling,
+check-in, and doctor-delay alerts happen inside a chat patients already have open. A deterministic booking engine, not
+free-form AI, handles every critical action, slot locking, confirmation, queue position, and prescriptions, so patients
+always get an accurate, auditable outcome, while Gemini AI is used only to understand natural language and assist
+staff, never to make bookings itself. One unified backend serves the WhatsApp bot, an admin/doctor/staff web
+dashboard, and future mobile apps from the same live data, and the system is multi-tenant from day one so a single
+deployment can onboard many clinics across Haryana without rebuilding software per clinic.
+
+Why It's Different
+Zero-install, WhatsApp-native access reaches patients who won't install a dedicated app. AI never holds authority
+— Gemini interprets language only; every booking, cancellation, delay, and role change runs through deterministic,
+auditable logic, removing the hallucination risk of typical AI-chatbot health tools. One shared backend across every
+channel means a clinic never has two versions of the truth. Multi-tenant by design lets Haryana onboard hundreds of
+clinics under one deployment, not one-off custom builds.
+
+Expected Impact
+Shorter patient wait times and fewer missed appointments through real-time queue and delay visibility. Less
+administrative burden on clinic staff, freeing time for patient care. Basic digital record-keeping for clinics that previously
+had none, laying groundwork for future integration with ABHA / Ayushman Bharat Digital Mission. Because it runs on
+WhatsApp, the reach extends to older patients and smaller towns that an app-only or website-only solution would miss
+— and because it's multi-tenant, the same platform scales from a handful of pilot clinics to district- or state-wide
+coverage at minimal marginal engineering cost.
+
+
+Current build: Python/FastAPI backend, SQLite, Meta WhatsApp Business Cloud API, Google Gemini, optional Google Calendar sync —
+already implements multi-tenant clinics, doctor scheduling and breaks, deterministic appointment booking with slot-locking, OPD queue and
+check-in, delay broadcast, digital prescriptions, and role-based access (Owner / Admin / Staff / Doctor / Patient). Web dashboard and public
+API layer in active development on the same unified backend.
+

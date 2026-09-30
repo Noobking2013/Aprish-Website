@@ -1,0 +1,41 @@
+/**
+ * SINGLE SOURCE OF TRUTH for what is live vs not. Every feature chip on the site
+ * reads from here. Never hard-code "Live" in a component.
+ *
+ * Source: Aprish_Pitch_Deck.pptx slides 5, 6, 8, 12 and Aprish_QA_and_open_items.md Q10.
+ * The Seva First PDF says queue/check-in, delay broadcast, digital prescriptions and
+ * role-based access already exist in the backend, but the deck lists their status as
+ * [FILL]. Until the founder confirms, they default to "building" (the honest, safe choice).
+ */
+export type Status = "live" | "building" | "planned";
+
+export const STATUS_LABEL: Record<Status, string> = {
+  live: "Live",
+  building: "In development",
+  planned: "Planned",
+};
+
+export const FEATURES = {
+  ariaWhatsApp:        { name: "Aria on WhatsApp",                       status: "live" as Status,     confirmed: true },
+  bookingViaWhatsApp:  { name: "Appointments & scheduling via WhatsApp", status: "live" as Status,     confirmed: true },
+  bookingEngine:       { name: "Deterministic booking engine",           status: "live" as Status,     confirmed: true },
+  webDashboard:        { name: "Role-based web dashboard",               status: "building" as Status, confirmed: true },
+  queueCheckIn:        { name: "Live queue & check-in",                  status: "building" as Status, confirmed: false }, // FOUNDER: confirm
+  delayAlerts:         { name: "Doctor-delay alerts",                    status: "building" as Status, confirmed: false }, // FOUNDER: confirm
+  digitalRx:           { name: "Digital prescriptions",                  status: "building" as Status, confirmed: false }, // FOUNDER: confirm
+  billingEmr:          { name: "Billing & EMR-lite",                     status: "building" as Status, confirmed: false }, // FOUNDER: confirm
+  stockTracking:       { name: "Stock tracking",                         status: "planned" as Status,  confirmed: false }, // FOUNDER: confirm
+  followUps:           { name: "Follow-up nudges",                       status: "planned" as Status,  confirmed: false }, // not in deck/PDF
+  blackVerification:   { name: "Aprish Black verification",              status: "planned" as Status,  confirmed: true },
+  brandPartnerRouting: { name: "Brand Partner Routing",                  status: "planned" as Status,  confirmed: true },
+} as const;
+
+export type FeatureKey = keyof typeof FEATURES;
+
+export const PRIVACY = [
+  // Deck slide 6 strip: all four are [FILL: status]. Render as "To be confirmed" until set.
+  { label: "Consent in the first chat",                    status: null as Status | null },
+  { label: "Identifiers removed before text reaches the AI", status: null as Status | null },
+  { label: "India-region hosting",                         status: null as Status | null },
+  { label: "ABDM / ABHA alignment",                        status: null as Status | null },
+];
