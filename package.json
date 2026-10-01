@@ -8,7 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "check": "jiti scripts/wall.check.ts && JITI_JSX=1 JITI_TSCONFIG_PATHS=1 jiti scripts/detail.check.ts && JITI_JSX=1 JITI_TSCONFIG_PATHS=1 jiti scripts/sections.check.ts && jiti scripts/roi.check.ts && jiti scripts/beta.check.ts"
+    "check": "jiti scripts/wall.check.ts && JITI_JSX=1 JITI_TSCONFIG_PATHS=1 jiti scripts/detail.check.ts && JITI_JSX=1 JITI_TSCONFIG_PATHS=1 jiti scripts/sections.check.ts && jiti scripts/roi.check.ts && jiti scripts/beta.check.ts && JITI_JSX=1 JITI_TSCONFIG_PATHS=1 jiti scripts/routes.check.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

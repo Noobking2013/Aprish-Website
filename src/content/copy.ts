@@ -106,11 +106,67 @@ export const ROI = {
   disclaimer: "Example numbers. Your clinic\u2019s figures will differ.",
 };
 
+/*
+   /product, the MODULES grid (docs/02 §product 2). Each entry is a FeatureKey plus one
+   honest line about the module; the status chip is read from FEATURES, never written here,
+   so the text can never disagree with the chip. `core`/`augmented` are the two columns;
+   `inDev` is the full-width row that is not shippable yet.
+*/
+export interface ModuleSpec {
+  feature: FeatureKey;
+  /** One line on what the module does. It never states a status — the chip does that. */
+  blurb: string;
+}
+
+/** docs/02 §product 1: the page header, above the modules grid. */
+export const PRODUCT = {
+  h1: "One platform. Start with one module.",
+};
+
 export const MODULES = {
   h2: "Start with one module. Add more as the clinic grows.",
-  core: ["bookingViaWhatsApp", "billingEmr", "stockTracking"] as FeatureKey[],
-  augmented: ["ariaWhatsApp", "blackVerification", "brandPartnerRouting"] as FeatureKey[],
-  inDev: ["webDashboard"] as FeatureKey[],
+  coreHeading: "Core",
+  augmentedHeading: "Augmented",
+  core: [
+    { feature: "bookingViaWhatsApp", blurb: "Patients pick a doctor, a time and a clinic inside WhatsApp, and the booking engine locks the slot." },
+    { feature: "billingEmr", blurb: "Billing and a light patient record sit beside the schedule, not in a separate system." },
+    { feature: "stockTracking", blurb: "Stock is tracked as it moves, so the front desk stops guessing what is on the shelf." },
+  ] as ModuleSpec[],
+  augmented: [
+    { feature: "ariaWhatsApp", blurb: "Aria answers patients on WhatsApp at any hour and hands every decision to the booking engine." },
+    { feature: "blackVerification", blurb: "The Aprish Black trust-mark, earned by clinics and checkable by patients." },
+    { feature: "brandPartnerRouting", blurb: "Patients are routed to the right brand partner at the right point in their care." },
+  ] as ModuleSpec[],
+  /** docs/02 §product 2: one full-width row, because the dashboard is not shippable yet. */
+  inDev: {
+    feature: "webDashboard",
+    blurb: "A role-based web dashboard, so the whole clinic works from one shared view.",
+  } as ModuleSpec,
+};
+
+/*
+   /product, the optional pricing block (docs/02 §product 5). Rendered ONLY when
+   SITE.showPricing is true, because the deck's tiers are marked "confirm they are current"
+   (docs/09 D17). The three ranges and the note line are the deck's, verbatim.
+*/
+export interface PriceTier {
+  name: string;
+  price: string;
+  /** docs/02 §product 5 marks Advanced as the target tier we are steering clinics toward. */
+  target?: boolean;
+}
+
+export const PRICING = {
+  h2: "Pricing",
+  /** Shown as a small chip on the target tier. */
+  targetLabel: "Target",
+  tiers: [
+    { name: "Basic", price: "\u20B92,000\u20134,000 / month" },
+    { name: "Advanced", price: "\u20B915,000\u20131,00,000 / month", target: true },
+    { name: "Enterprise", price: "\u20B91,00,000\u20133,00,000+ / month" },
+  ] as PriceTier[],
+  /** docs/02 §product 5: the one line that sums the list up. */
+  note: "One published price list; rates vary by location tier.",
 };
 
 export const BLACK = {
@@ -119,6 +175,10 @@ export const BLACK = {
   status: "planned" as const,
   tagline: "Headache-free, friendly.",
   criteriaNote: "Criteria, who verifies and how often will be published before launch.",
+  /** The two words inside the badge ring (docs/02 §black). The ALL-CAPS tracking is badge-only. */
+  badge: { title: "BLACK", verified: "VERIFIED" },
+  /** docs/02 §black: the only CTA, and it goes to /join. */
+  cta: "Tell us you are interested",
 };
 
 /*
@@ -447,4 +507,65 @@ export const FOOTER = {
       links: [{ label: "Privacy", to: "/privacy" }] as FooterLink[],
     },
   ],
+};
+
+/* ------------------------------------------------------------------
+   /join (docs/02 §join)
+   The H2 and the form are reused verbatim from the Home beta CTA (BETA). This block adds
+   only the two strings docs/02 fixes: the QR caption and the team heading. The people's
+   names come from SITE (config.ts); only the role labels live here, because docs/02 says
+   "names and roles only; no photos or bios until supplied".
+------------------------------------------------------------------ */
+
+export const JOIN = {
+  /** docs/02 §join: caption under the WhatsApp QR. */
+  qrCaption: "Or scan to chat with Aria",
+  /** docs/02 §join: heading over the two names. */
+  teamHeading: "Who is behind Aprish",
+  roles: { founder: "Founder", spokesperson: "Spokesperson" },
+};
+
+/* ------------------------------------------------------------------
+   /privacy (docs/02 §privacy)
+   A short plain-language notice, deliberately a STUB: it needs legal review (DPDP Act)
+   before launch, so nothing here promises a retention period or a legal basis. The two
+   "to be confirmed" lines are placeholders the founder fills from config (contact email).
+------------------------------------------------------------------ */
+
+export const PRIVACY_NOTICE = {
+  h1: "Privacy",
+  intro: "A short, plain-language notice for the Aprish website and the beta sign-up form.",
+  items: [
+    {
+      label: "What we collect",
+      body: "The beta form asks for your name, your clinic's name, your city, the number of doctors, and a WhatsApp number or email. Nothing else.",
+    },
+    {
+      label: "Why we collect it",
+      body: "Only to contact you about the beta and set up a pilot. It is not used for anything else.",
+    },
+    {
+      label: "How long we keep it",
+      body: "A retention period will be published here before launch.",
+    },
+  ],
+  contact: {
+    label: "Contact",
+    /** Shown with SITE.contactEmail when it is set, or replaced by contactFallback when it is not. */
+    body: "For anything to do with your details, write to us.",
+  },
+  contactFallback: "Contact details will be published here before launch.",
+  /** Rendered next to the code comment that flags the legal review. */
+  reviewNote: "This notice is a placeholder. It needs legal review before launch.",
+};
+
+/* ------------------------------------------------------------------
+   The 404 route (docs/02 §"Routes"). Reached by the catch-all `*`. It keeps the site's
+   voice: say what happened, then offer the way home.
+------------------------------------------------------------------ */
+
+export const NOT_FOUND = {
+  h1: "Page not found",
+  body: "That page does not exist, or it has moved. The link below still works.",
+  home: "Back to home",
 };

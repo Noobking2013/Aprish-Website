@@ -49,6 +49,11 @@ static wall teaser) and **D16** (the beta form never fakes success).
 
 ## Phase 6. Product, Black, Join, Privacy, 404
 **Read:** `docs/02` (the route sections), `docs/03`
+Product (a modules grid that imports the Home Safety and ROI components and gates pricing on
+`SITE.showPricing`), Black (the self-drawing gold badge on teal-900), Join (the shared beta form
+plus the WhatsApp QR and who is behind Aprish), Privacy (an honest stub) and the 404.
+`scripts/routes.check.ts` renders all five and audits every text node against `src/content/*`, so
+no route can carry invented copy. See docs/09 **D17**.
 **Done when:** all routes complete; `/product` pricing hidden while `SITE.showPricing` is false.
 
 ## Phase 7. Polish and QA
