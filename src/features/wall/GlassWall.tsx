@@ -140,8 +140,14 @@ export function GlassWall({ onFirstInput, openKey = null, onOpen, onClose }: Gla
      on purpose — this is the one place in the app that must land before the next paint,
      so the loop cannot write a single card transform after the panel has taken off. */
   useLayoutEffect(() => {
-    frozenRef.current = openKey !== null;
-  }, [openKey]);
+    const frozen = openKey !== null;
+    frozenRef.current = frozen;
+    /* D11: opening settles the camera (target := cam, velocity 0) so nothing glides once
+       the panel is open, and closing restarts the idle timer before the loop's first
+       resumed frame — otherwise a wall the visitor had left alone for a few seconds would
+       start drifting while the panel is still flying back. */
+    camera.setFrozen(frozen);
+  }, [openKey, camera]);
 
   /* Keep the dialog mounted through its own close flight — it calls `onClosed` once the
      panel has landed, which is the only thing that unmounts it. The key change remounts

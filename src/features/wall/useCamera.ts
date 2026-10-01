@@ -41,6 +41,14 @@ export interface CameraHandle {
   state: CameraState;
   attach: (container: HTMLElement, options: CameraOptions) => () => void;
   step: (dtSeconds: number, reducedMotion: boolean) => void;
+  /**
+   * D11. The wall's still state, driven by the page (see GlassWall). Freezing settles the
+   * camera first — `target := cam` and velocity 0 — so a flick that was still gliding, or
+   * a half-finished key pan, cannot carry on once the panel is open and move the card the
+   * panel flew out of during the return leg. Releasing restarts the idle-drift timer, so
+   * the wall cannot start drifting on the first frame after the panel lands.
+   */
+  setFrozen: (frozen: boolean) => void;
 }
 
 /** Pointer travel that turns a click into a drag (docs/04). */
@@ -93,6 +101,19 @@ export function useCamera(): CameraHandle {
 
     /** Frozen while the booking detail is open (D11): no input moves the camera. */
     const enabled = () => options?.isEnabled?.() !== false;
+
+    /* D11. Frozen is the wall's still state: settle on the way in, wake on the way out.
+       Both halves live in one method so they cannot be called out of balance. */
+    const setFrozen = (frozen: boolean) => {
+      if (frozen) {
+        state.target.x = state.cam.x;
+        state.target.y = state.cam.y;
+        state.vel.x = 0;
+        state.vel.y = 0;
+      } else {
+        state.lastInputAt = performance.now();
+      }
+    };
 
     const step = (dtSeconds: number, reducedMotion: boolean) => {
       const dt = clamp(dtSeconds, 0, 0.1);
@@ -268,6 +289,6 @@ export function useCamera(): CameraHandle {
       };
     };
 
-    return { state, attach, step };
+    return { state, attach, step, setFrozen };
   }, []);
 }
