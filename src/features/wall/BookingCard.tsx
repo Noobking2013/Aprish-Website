@@ -1,0 +1,97 @@
+import { memo } from "react";
+import { Check } from "lucide-react";
+import { WALL } from "@/content/copy";
+import type { SampleBooking } from "@/lib/wall/wallData";
+
+/**
+ * One confirmed booking on the glass wall (docs/04_GLASS_WALL_SPEC.md, "Card design").
+ *
+ * The element is 248x156 at unit 1 and is NEVER resized by React: GlassWall writes
+ * `transform`, `opacity`, `zIndex`, `display`, `data-lod` and `data-focus` straight onto
+ * the node every frame. `memo` and the stable `registerRef` keep React out of that path.
+ *
+ * `opacity: 0` is the "not placed yet" state — it stops a newly mounted card from
+ * flashing at (0, 0) before the render loop has written its first transform.
+ */
+
+/** Booking `tint` 0-4 maps to the five soft fill tokens (docs/01). */
+const TINT_RING = [
+  "ring-tint-sand",
+  "ring-tint-mint",
+  "ring-tint-lavender",
+  "ring-tint-blush",
+  "ring-tint-parchment",
+] as const;
+
+export interface BookingCardProps {
+  /** "${col},${row}" — the key GlassWall files the element under. */
+  cellKey: string;
+  booking: SampleBooking;
+  cardW: number;
+  cardH: number;
+  /** Stable ref callback from GlassWall (never a new identity). */
+  registerRef: (key: string, element: HTMLButtonElement | null) => void;
+  /** Phase 4b wires BookingDetail here. Nothing passes it in 4a. */
+  onOpen?: (booking: SampleBooking) => void;
+}
+
+function BookingCardBase({ cellKey, booking, cardW, cardH, registerRef, onOpen }: BookingCardProps) {
+  const name = `${booking.first} ${booking.lastInitial}.`;
+  /* Shape fixed by docs/04: "Aarav S., Dr. Mehta, Dermatology, today 4:15 PM, token 14,
+     confirmed. Sample data." — every card states the booking AND that it is sample data. */
+  const label =
+    `${name}, ${booking.doctor}, ${booking.specialty}, ` +
+    `${booking.day.toLowerCase()} ${booking.time}, token ${booking.token}, ` +
+    `confirmed. ${WALL.cardSuffix}`;
+
+  return (
+    <button
+      type="button"
+      ref={(element) => registerRef(cellKey, element)}
+      aria-label={label}
+      className="glass wall-card flex flex-col justify-between px-4 py-3.5 text-left"
+      style={{ width: cardW, height: cardH, transformOrigin: "center", opacity: 0 }}
+      onClick={onOpen ? () => onOpen(booking) : undefined}
+    >
+      <span className="flex items-start justify-between gap-2">
+        <span className="flex min-w-0 items-center gap-2">
+          <span
+            aria-hidden="true"
+            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cream-100/15 ring-1 ${TINT_RING[booking.tint]}`}
+          >
+            <span className="text-[10px] font-semibold text-cream-100">{booking.initials}</span>
+          </span>
+          <span className="truncate text-[13px] font-semibold text-cream-100">{name}</span>
+        </span>
+
+        <span className="inline-flex shrink-0 items-center gap-1.5 pt-0.5">
+          <span
+            aria-hidden="true"
+            className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-peach-400"
+          >
+            <Check className="h-2.5 w-2.5 text-teal-950" strokeWidth={3} />
+          </span>
+          <span className="text-[10px] font-semibold text-cream-100">Confirmed</span>
+        </span>
+      </span>
+
+      <span className="truncate text-[12px] font-medium text-cream-100">
+        {booking.doctor} <span className="text-sage-300">·</span> {booking.specialty}
+      </span>
+
+      <span className="flex items-end justify-between gap-2">
+        <span className="data text-[11px] text-cream-100">
+          {booking.day}, {booking.time}
+        </span>
+        <span className="data text-[11px] text-cream-100">Token #{booking.token}</span>
+      </span>
+
+      <span className="flex items-center justify-between gap-2">
+        <span className="text-[10px] text-sage-300">via WhatsApp</span>
+        <span className="data text-[10px] text-sage-300">{booking.id}</span>
+      </span>
+    </button>
+  );
+}
+
+export const BookingCard = memo(BookingCardBase);

@@ -223,6 +223,27 @@ export const CHAT_DEMO = {
 };
 
 /* ------------------------------------------------------------------
+   THE LIVE WALL COPY (added in Phase 4a, docs/04_GLASS_WALL_SPEC.md)
+   The wall shows fictional bookings from src/lib/wall/wallData.ts, so every
+   card and the HUD carry the "sample data" honesty label (docs/03, demo rules).
+   Wording is fixed by docs/02 ("title + Sample data chip") and docs/04 ("Drag,
+   scroll or use arrow keys"). No numbers, no promises, nothing to verify here.
+------------------------------------------------------------------ */
+
+export const WALL = {
+  /** HUD pill, top-left. Also the route's only heading (id="route-title"). */
+  h1: "Confirmed bookings",
+  /** The honesty chip. Fake bookings must say so wherever they appear. */
+  sampleChip: "Sample data",
+  /** HUD pill, bottom-centre. Fades out after the first input. */
+  hint: "Drag, scroll or use arrow keys",
+  /** Accessible name of the region that holds the cards. */
+  regionLabel: "Confirmed bookings, sample data",
+  /** Ends every card's aria-label, so no card is read without the label. */
+  cardSuffix: "Sample data.",
+};
+
+/* ------------------------------------------------------------------
    GLOBAL CHROME COPY (added in Phase 1)
    Nav, full-screen menu and footer labels. The short route names used by the
    stairs overlay and the screen-reader announcement live in
