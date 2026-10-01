@@ -28,6 +28,11 @@ export interface CameraState {
 export interface CameraOptions {
   /** False while the stage is off screen or the tab is hidden. */
   isVisible: () => boolean;
+  /**
+   * False while the booking detail is open (D11). The camera then ignores wheel,
+   * drag, keys and idle drift, so the card the dialog flew out of stays put.
+   */
+  isEnabled?: () => boolean;
   /** Fired once, on the first real input (the HUD hint fades out from here). */
   onFirstInput?: () => void;
 }
@@ -86,12 +91,16 @@ export function useCamera(): CameraHandle {
       state.target.y += dy;
     };
 
+    /** Frozen while the booking detail is open (D11): no input moves the camera. */
+    const enabled = () => options?.isEnabled?.() !== false;
+
     const step = (dtSeconds: number, reducedMotion: boolean) => {
       const dt = clamp(dtSeconds, 0, 0.1);
 
       if (
         !reducedMotion &&
         !state.dragging &&
+        enabled() &&
         options?.isVisible() !== false &&
         state.lastInputAt > 0 &&
         performance.now() - state.lastInputAt > IDLE_AFTER_MS
@@ -119,6 +128,7 @@ export function useCamera(): CameraHandle {
 
       const onPointerDown = (event: PointerEvent) => {
         if (event.pointerType === "mouse" && event.button !== 0) return;
+        if (!enabled()) return;
         pointerId = event.pointerId;
         state.dragging = true;
         state.suppressClick = false;
@@ -140,6 +150,10 @@ export function useCamera(): CameraHandle {
 
       const onPointerMove = (event: PointerEvent) => {
         if (!state.dragging || event.pointerId !== pointerId) return;
+        if (!enabled()) {
+          endDrag(event);
+          return;
+        }
         const now = performance.now();
         const last = samples[samples.length - 1];
         pan(event.clientX - last.x, event.clientY - last.y);
@@ -165,7 +179,7 @@ export function useCamera(): CameraHandle {
 
         const first = samples[0];
         const last = samples[samples.length - 1];
-        if (first && last) {
+        if (first && last && enabled()) {
           const elapsed = Math.max(1, last.t - first.t);
           state.vel.x = (last.x - first.x) / elapsed;
           state.vel.y = (last.y - first.y) / elapsed;
@@ -190,6 +204,7 @@ export function useCamera(): CameraHandle {
 
       const onWheel = (event: WheelEvent) => {
         event.preventDefault();
+        if (!enabled()) return;
         const scale = event.deltaMode === 1 ? WHEEL_LINE_PX : 1;
         if (event.shiftKey) {
           pan(-event.deltaY * scale, 0);
@@ -203,7 +218,7 @@ export function useCamera(): CameraHandle {
          soon as the route focus lands on the HUD heading, and also with a card focused. */
       const onKeyDown = (event: KeyboardEvent) => {
         if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
-        if (options?.isVisible() === false) return;
+        if (!enabled() || options?.isVisible() === false) return;
         const target = event.target as HTMLElement | null;
         if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
 

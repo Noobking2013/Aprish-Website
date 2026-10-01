@@ -270,6 +270,54 @@
   }
   .wall-hint[data-hidden="true"] { opacity: 0; transform: translateY(8px); }
 
+  /* ---------------- The booking detail (`/live`, docs/04; D11 and D12) ----------------
+
+     The panel is `position: fixed` and portalled to <body> on purpose: #route-root carries
+     a transform during the page enter, and a fixed element inside it would resolve against
+     that ancestor instead of the viewport. z-index 70 keeps it above the navbar (50) and the
+     HUD (40) but below the menu (80) and the stairs (90), so closing it first is respected. */
+
+  .wall-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgb(3 20 20 / 0.55);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+  }
+
+  /* GSAP owns x/y/width/height (and opacity). `width` here is the natural size the flight
+     measures off-screen and lands on; `max-height` + the clipped body keep it on screen. */
+  .wall-dialog {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: min(92vw, 520px);
+    max-height: 88vh;
+    overflow: hidden;
+    border-radius: 26px;
+    padding: 1.4rem 1.5rem;
+    outline: none;           /* focused programmatically on open; the Close button shows focus */
+    cursor: default;
+  }
+  /* The body scrolls, never the panel: the panel's own box is what GSAP animates. */
+  .wall-dialog__content {
+    max-height: calc(88vh - 3rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* D11: while a detail is open the cards stop paying for their own blur — the overlay's
+     blur is then the only blur on screen. Their fills are untouched. */
+  .stage[data-frozen="true"] .wall-card {
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+  }
+
+  /* The optional live pulse. Exactly one card wears data-pulse at a time (GlassWall). */
+  .wall-card[data-pulse="true"] .wall-tick {
+    animation: wall-tick-pulse 700ms var(--ease-out-soft);
+  }
+
 }
 
 @keyframes orb-drift {
@@ -303,6 +351,12 @@
   to   { opacity: 1; transform: none; }
 }
 
+/* The live pulse (docs/04): a ring that leaves the confirmed tick, once. */
+@keyframes wall-tick-pulse {
+  0%   { box-shadow: 0 0 0 0 rgb(234 163 115 / 0.6); }
+  100% { box-shadow: 0 0 0 10px rgb(234 163 115 / 0); }
+}
+
 /* Motion safety: one switch, respected everywhere. JS must also check the media query. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -310,4 +364,7 @@
   .orb { animation: none; }
   .float-soft, .pulse-dot, .scroll-cue__line::after { animation: none; }
   .typing-bubble span, .bubble-enter { animation: none; }
+  /* The wall's pulse never runs: GlassWall also refuses to set data-pulse under reduced
+     motion, so this is belt and braces (the intro is a scalar for the same reason). */
+  .wall-card[data-pulse="true"] .wall-tick { animation: none; }
 }

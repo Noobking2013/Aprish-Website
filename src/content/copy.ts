@@ -241,6 +241,33 @@ export const WALL = {
   regionLabel: "Confirmed bookings, sample data",
   /** Ends every card's aria-label, so no card is read without the label. */
   cardSuffix: "Sample data.",
+
+  /* ------------------------------------------------------------------
+     THE BOOKING DETAIL DIALOG (added in Phase 4b, docs/04_GLASS_WALL_SPEC.md).
+     Everything a card opens into. The dialog is still sample data, so its
+     accessible name and its footer both say so (docs/03, demo rules), and
+     nothing here claims a status — status words come from status.ts only.
+  ------------------------------------------------------------------ */
+  detail: {
+    /** role="dialog" aria-label. The "sample data" half is the honesty label. */
+    dialogLabel: "Booking details, sample data",
+    /** Captions for the two mono values the card already shows. */
+    tokenLabel: "Token",
+    bookingIdLabel: "Booking ID",
+    /** The four steps of one booking, in order. Each is the whole line of copy. */
+    steps: [
+      "Message received, via WhatsApp",
+      "Aria read the request, Gemini interprets intent only",
+      "Slot locked, booking engine",
+      "Confirmation sent",
+    ],
+    /** Heading over the step list. The times under it are derived samples. */
+    timelineLabel: "Sample timeline",
+    /** Closes the dialog (Escape and the overlay do the same). */
+    close: "Close",
+    /** Ends the dialog, after the timeline. Same promise as every card. */
+    footer: "Sample data. No real patients.",
+  },
 };
 
 /* ------------------------------------------------------------------

@@ -31,8 +31,12 @@ export interface BookingCardProps {
   cardH: number;
   /** Stable ref callback from GlassWall (never a new identity). */
   registerRef: (key: string, element: HTMLButtonElement | null) => void;
-  /** Phase 4b wires BookingDetail here. Nothing passes it in 4a. */
-  onOpen?: (booking: SampleBooking) => void;
+  /**
+   * Phase 4b: clicking a card asks GlassWall to open the detail. The key is
+   * `cellKey`, so the wall can find both the booking and this element again.
+   * Undefined when the wall is not wired to a detail (older call sites).
+   */
+  onOpen?: (key: string) => void;
 }
 
 function BookingCardBase({ cellKey, booking, cardW, cardH, registerRef, onOpen }: BookingCardProps) {
@@ -51,7 +55,7 @@ function BookingCardBase({ cellKey, booking, cardW, cardH, registerRef, onOpen }
       aria-label={label}
       className="glass wall-card flex flex-col justify-between px-4 py-3.5 text-left"
       style={{ width: cardW, height: cardH, transformOrigin: "center", opacity: 0 }}
-      onClick={onOpen ? () => onOpen(booking) : undefined}
+      onClick={onOpen ? () => onOpen(cellKey) : undefined}
     >
       <span className="flex items-start justify-between gap-2">
         <span className="flex min-w-0 items-center gap-2">
@@ -67,7 +71,7 @@ function BookingCardBase({ cellKey, booking, cardW, cardH, registerRef, onOpen }
         <span className="inline-flex shrink-0 items-center gap-1.5 pt-0.5">
           <span
             aria-hidden="true"
-            className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-peach-400"
+            className="wall-tick flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-peach-400"
           >
             <Check className="h-2.5 w-2.5 text-teal-950" strokeWidth={3} />
           </span>
