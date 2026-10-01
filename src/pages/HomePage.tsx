@@ -6,6 +6,7 @@ import { TryAria } from "@/features/home/TryAria";
 import { Safety } from "@/features/home/Safety";
 import { WallTeaser } from "@/features/home/WallTeaser";
 import { RoiCalculator } from "@/features/home/RoiCalculator";
+import { BetaCta } from "@/features/home/BetaCta";
 
 export function HomePage() {
   useDocumentMeta({ title: "Aprish | The operating and growth OS for independent clinics" });
@@ -16,7 +17,7 @@ export function HomePage() {
     // (docs/09 D6). Each section declares its own.
     //
     // Section order is docs/02's: 1 Hero, 2 Problem, 3 Flow, 4 Try Aria, 5 Safety,
-    // 6 wall teaser, 7 ROI calculator. Still to come (docs/07): 8 beta CTA.
+    // 6 wall teaser, 7 ROI calculator, 8 beta CTA. All eight Home sections are now built.
     <main id="main" tabIndex={-1}>
       <Hero />
       <Problem />
@@ -25,6 +26,7 @@ export function HomePage() {
       <Safety />
       <WallTeaser />
       <RoiCalculator />
+      <BetaCta />
     </main>
   );
 }

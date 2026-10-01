@@ -121,14 +121,43 @@ export const BLACK = {
   criteriaNote: "Criteria, who verifies and how often will be published before launch.",
 };
 
+/*
+   HOME, SECTION 8: THE BETA CTA (docs/02 §8) + the working beta form (docs/03).
+
+   The form's behaviour is docs/03's: it NEVER fakes success. `success` is shown only after the
+   endpoint answers 2xx (see src/lib/beta.ts and docs/09 D16); without an endpoint the form opens
+   WhatsApp prefilled and shows `fallbackNote`; a failure shows `error`. `fields` is the field
+   order (name, clinic, city, doctors, contact) and doubles as the WhatsApp prefill line labels.
+*/
 export const BETA = {
   h2: "Modernise your front desk.",
   tagline: "Limited beta",
   body: "We are onboarding a small first group of clinics. Tell us about yours and we will set up a pilot.",
+  /** Field labels, in the order docs/03 lists them. Reused as the WhatsApp prefill line labels. */
   fields: ["Your name", "Clinic name", "City", "Number of doctors", "WhatsApp number or email"],
+  /** Shown when a required field is empty. */
+  required: "Please fill this in.",
+  /** Shown for the doctors field when it is not a whole number of one or more. */
+  doctorsInvalid: "Enter a whole number, for example 3.",
+  /** Shown for the contact field when it is neither an email nor a plausible phone number. */
+  contactInvalid: "Enter a WhatsApp number or an email address.",
   consent: "I agree that Aprish may contact me about the beta. My details are used only for this purpose.",
+  /** Shown when the required consent box is left unticked. */
+  consentRequired: "Please tick the box so we may contact you.",
+  submit: "Request a pilot",
+  sending: "Sending\u2026",
+  /** The ONLY success copy. Rendered only after the endpoint answers 2xx. */
   success: "Thanks. We have your details and will be in touch.",
+  /** Shown for a non-2xx response, or when the request throws (offline, timeout). */
+  error: "We could not send that. Please try again, or message Aria on WhatsApp.",
+  /** Shown after the no-endpoint path hands the visitor to WhatsApp. */
   fallbackNote: "Prefer to talk now? Message Aria on WhatsApp.",
+  /** Label for the WhatsApp button (success and fallback states). */
+  whatsappButton: "Chat with Aria on WhatsApp",
+  /** Accessible name for the hidden honeypot input; never shown to a person. */
+  honeypotLabel: "Leave this field empty",
+  /** Opening line of the message the form prefills into WhatsApp. */
+  waIntro: "Hi Aria, I would like to join the Aprish beta.",
 };
 
 /* ------------------------------------------------------------------

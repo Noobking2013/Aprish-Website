@@ -28,9 +28,10 @@ const { Flow } = await import("../src/features/home/Flow");
 const { Safety } = await import("../src/features/home/Safety");
 const { WallTeaser, TEASER_CARDS } = await import("../src/features/home/WallTeaser");
 const { RoiCalculator } = await import("../src/features/home/RoiCalculator");
+const { BetaCta } = await import("../src/features/home/BetaCta");
 const { FEATURE_ICON } = await import("../src/features/home/featureIcons");
 const { TransitionContext } = await import("../src/features/transitions/useTransition");
-const { PROBLEM, FLOW, SAFETY, WALL_TEASER, WALL, ROI } = await import("../src/content/copy");
+const { PROBLEM, FLOW, SAFETY, WALL_TEASER, WALL, ROI, BETA } = await import("../src/content/copy");
 const { formatRupees, formatVisits } = await import("../src/lib/roi");
 const content = await import("../src/content/status");
 
@@ -63,6 +64,8 @@ const teaserHtml = renderToStaticMarkup(
   React.createElement(TransitionContext.Provider, { value: stub }, React.createElement(WallTeaser)),
 );
 const roiHtml = renderToStaticMarkup(React.createElement(RoiCalculator));
+/* BetaCta renders the form, whose only links are external WhatsApp <a>s — no TLink, no stub. */
+const betaHtml = renderToStaticMarkup(React.createElement(BetaCta));
 
 /* -------------------------------- A. Problem (docs/02 §2) -------------------------------- */
 
@@ -290,6 +293,36 @@ ok(!roiHtml.includes(ROI.zeroFeePrompt), "a non-zero default must not show the z
 ok(ROI.invalid.length > 0, "ROI.invalid must exist for the error state");
 ok(ROI.zeroFeePrompt.length > 0, "ROI.zeroFeePrompt must exist for the zero-fee state");
 
+/* ----------------- G. beta CTA + form (docs/02 §8, docs/09 D16) ----------------- */
+
+ok(betaHtml.includes('data-nav-theme="light"'), "Beta CTA must declare the light navbar theme");
+ok(betaHtml.includes("bg-peach-400"), "Beta CTA must be the peach-400 band");
+ok(betaHtml.includes('aria-labelledby="beta-title"'), "the section must be named by its H2");
+ok(betaHtml.includes('id="beta-title"'), "the H2 must carry the beta-title id");
+ok(betaHtml.includes(BETA.h2), "the Beta CTA must show BETA.h2");
+ok(betaHtml.includes(BETA.body), "the Beta CTA must show BETA.body");
+ok(betaHtml.includes(BETA.tagline), "the Beta CTA must show BETA.tagline");
+ok(betaHtml.includes("<form"), "the Beta CTA must render the working form");
+BETA.fields.forEach((label) => {
+  if (!betaHtml.includes(label)) ok(false, `the form must label the "${label}" field`);
+});
+
+/* The rules that keep the form honest: a honeypot, a required consent, and — crucially — no
+   success copy anywhere in the idle markup. Success is earned by a real 2xx (src/lib/beta.ts). */
+ok(betaHtml.includes('name="company_website"'), "the honeypot field must be present");
+ok(betaHtml.includes('aria-hidden="true"'), "the honeypot must be hidden from assistive tech");
+ok(betaHtml.includes('tabindex="-1"'), "the honeypot must be out of the tab order");
+ok(
+  /type="checkbox"[^>]*required/.test(betaHtml),
+  "the consent checkbox must be present and required",
+);
+ok(betaHtml.includes(BETA.consent), "the consent text must come from BETA.consent");
+ok(betaHtml.includes(BETA.submit), "the submit button must show BETA.submit");
+ok(!betaHtml.includes(BETA.success), "the idle form must NOT show the success copy");
+ok(!betaHtml.includes(BETA.error), "the idle form must NOT show the error copy");
+ok(!betaHtml.includes(BETA.fallbackNote), "the idle form must NOT show the WhatsApp fallback note");
+ok(!betaHtml.includes(BETA.sending), "the idle form must not read as mid-send");
+
 /* ----------------------------- E. no invented copy anywhere -----------------------------
    Every rendered text node must be a WHOLE string that already exists in copy.ts or
    status.ts. The only generated text allowed is the step counters ("01" and "01 / 05"),
@@ -307,6 +340,7 @@ collect(SAFETY);
 collect(WALL_TEASER);
 collect(WALL);
 collect(ROI);
+collect(BETA);
 collect(content);
 
 const COUNTER = /^\d{2}( \/ \d{2})?$/;
@@ -351,6 +385,7 @@ audit(flowHtml, "Flow");
 audit(safetyHtml, "Safety");
 audit(teaserChrome, "Wall teaser");
 audit(roiHtml, "ROI");
+audit(betaHtml, "Beta CTA");
 console.log(
   "text nodes checked:",
   checked,
