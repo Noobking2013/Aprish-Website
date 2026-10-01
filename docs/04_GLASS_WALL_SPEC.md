@@ -27,7 +27,7 @@ Size 248x156 at unit 1 (the lens and metrics handle scaling). Rounded 26px. Cont
 │ via WhatsApp        APR-4F2A  │   small, sage-300
 └───────────────────────────────┘
 ```
-- Root element `<button>` (so it is focusable and keyboard-operable) with `aria-label="Aarav S., Dr. Mehta, Dermatology, today 4:15 PM, token 14, confirmed. Sample data."`.
+- Root element `<button>` (so it is focusable and keyboard-operable). Its accessible name is its own visible text followed by a visually-hidden "Sample data." — there is no `aria-label`, so WCAG 2.5.3 (Label in Name) holds and no card is ever read without the sample-data suffix (docs/09 D18).
 - The check mark is a small `peach-400` circle with a `teal-950` tick, not an emoji.
 - Avatar ring colour comes from `booking.tint` (0 to 4 maps to the five `tint-*` tokens).
 - No photos. No logos inside cards.

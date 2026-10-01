@@ -99,24 +99,22 @@ export function BookingCardContent({ booking }: { booking: SampleBooking }) {
 }
 
 function BookingCardBase({ cellKey, booking, cardW, cardH, registerRef, onOpen }: BookingCardProps) {
-  const name = bookingName(booking);
-  /* Shape fixed by docs/04: "Aarav S., Dr. Mehta, Dermatology, today 4:15 PM, token 14,
-     confirmed. Sample data." — every card states the booking AND that it is sample data. */
-  const label =
-    `${name}, ${booking.doctor}, ${booking.specialty}, ` +
-    `${booking.day.toLowerCase()} ${booking.time}, token ${booking.token}, ` +
-    `confirmed. ${WALL.cardSuffix}`;
-
   return (
     <button
       type="button"
       ref={(element) => registerRef(cellKey, element)}
-      aria-label={label}
       className="glass wall-card flex flex-col justify-between px-4 py-3.5 text-left"
       style={{ width: cardW, height: cardH, transformOrigin: "center", opacity: 0 }}
       onClick={onOpen ? () => onOpen(cellKey) : undefined}
     >
       <BookingCardContent booking={booking} />
+      {/*
+        The accessible name is the card's own visible text, so WCAG 2.5.3 (Label in Name)
+        holds — an aria-label that re-worded the card dropped the visible "via WhatsApp"
+        and booking-id strings. The sample-data honesty suffix rides along as visually-hidden
+        text, so no card is ever read without it (docs/04).
+      */}
+      <span className="sr-only">{WALL.cardSuffix}</span>
     </button>
   );
 }

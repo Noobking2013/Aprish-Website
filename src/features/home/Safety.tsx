@@ -116,7 +116,9 @@ export function Safety() {
                 }`}
               >
                 <p className="font-semibold text-teal-900">{node.title}</p>
-                <p className="mt-1 text-sm text-teal-700">{node.sub}</p>
+                <p className={`mt-1 text-sm ${node.emphasis ? "text-teal-900" : "text-teal-700"}`}>
+                  {node.sub}
+                </p>
               </li>
             ))}
           </ol>

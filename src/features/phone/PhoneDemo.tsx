@@ -93,8 +93,8 @@ export function PhoneDemo({ chat }: PhoneDemoProps) {
             <img
               src="/brand/logo-on-dark.png"
               alt=""
-              width={804}
-              height={534}
+              width={200}
+              height={133}
               className="h-4 w-auto"
             />
             <span

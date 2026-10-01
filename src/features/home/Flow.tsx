@@ -105,7 +105,7 @@ export function Flow() {
                       : "border-teal-900/15 bg-cream-50 text-teal-700 hover:border-teal-900/35"
                   }`}
                 >
-                  <span className="data text-[0.68rem] opacity-70">{pad(index + 1)}</span>
+                  <span className="data text-[0.68rem]">{pad(index + 1)}</span>
                   {step.label}
                   <span className="flow-bar mt-1 w-full" aria-hidden="true" onAnimationEnd={onBarEnd} />
                 </button>

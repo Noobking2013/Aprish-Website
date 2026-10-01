@@ -63,6 +63,14 @@ no route can carry invented copy. See docs/09 **D17**.
 3. Keyboard-only pass through every route. Screen-reader spot check of the wall dialog and the chat log.
 4. Test with `prefers-reduced-motion` on. Test in Safari (blur, `dvh`, pointer events).
 5. `npm run build && npm run preview`, click every link.
+**Progress:** built `scripts/qa.check.ts` (now part of `npm run check`) for the static checklist
+items — forbidden terms, hard-coded status labels, PNG sizes, the `index.html` head/SEO tags and
+per-route heading structure — and fixed everything it found: the per-route `rel=canonical`/`og:url`
+(emitted at runtime by `useDocumentMeta`), `wing-motif.png` and `logo-on-dark.png` resized under
+100KB, two colour-contrast bugs (`Flow` tab numerals, the emphasised `Safety` node) and the wall
+cards' accessible name (WCAG 2.5.3). Lighthouse is clean on every route (Perf 91-97,
+A11y/BP/SEO 100) and a headless 360-2560 sweep shows no overflow. The keyboard-only,
+screen-reader and Safari passes are for a human browser. See docs/09 **D18**.
 
 ---
 

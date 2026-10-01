@@ -9,10 +9,22 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/brand/favicon-512.png" />
     <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <!--
+      The per-route canonical and og:url are written at runtime by useDocumentMeta, from the
+      live origin + path — see that hook. A root-relative href here would make Vite try to
+      bundle the site root as an asset, and an absolute SITE.url is still the placeholder
+      https://aprish.example (FOUNDER: real domain, then absolute og:image and a sitemap).
+    -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Aprish" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:url" content="/" />
     <meta property="og:title" content="Aprish | The operating and growth OS for independent clinics" />
     <meta property="og:description" content="24/7 WhatsApp booking, live queues and delay alerts for independent clinics. Try Aria live." />
     <meta property="og:image" content="/brand/og-base.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Aprish — the operating and growth OS for independent clinics." />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
