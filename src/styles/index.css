@@ -45,6 +45,7 @@
 :root {
   --stairs-cover-ms: 550ms;
   --stairs-reveal-ms: 600ms;
+  --flow-step-ms: 6000ms;        /* docs/02 §3: the Flow section advances itself every 6s */
   --particle-body: 217 150 43;   /* rgb triplet, read by the canvas at draw time */
   --particle-star: 237 181 112;
 }
@@ -318,6 +319,48 @@
     animation: wall-tick-pulse 700ms var(--ease-out-soft);
   }
 
+  /* ------------------- Home, section 3: the flow (docs/02 §3; D13) -------------------
+
+     The progress underline IS the clock: one CSS animation on the active pill's bar, and its
+     own `animationend` is what moves the section on (useFlowTabs). Two attributes drive it,
+     both owned by that hook and never by CSS:
+       data-armed  — true only after the row has been in view, and false for good once the
+                     reader takes over. The animation exists only while it is true, which is
+                     why taking over also clears the underline.
+       data-paused — hovered, focused or off-screen. A pause, not a cancel: the bar freezes
+                     where it is and picks up from there. */
+  .flow-bar {
+    display: block; height: 2px; border-radius: 999px;
+    background: currentColor; transform: scaleX(0); transform-origin: left center;
+  }
+  .flow-row[data-armed="true"] .flow-pill[data-active="true"] .flow-bar {
+    animation: flow-fill var(--flow-step-ms) linear forwards;
+  }
+  .flow-row[data-paused="true"] .flow-pill[data-active="true"] .flow-bar {
+    animation-play-state: paused;
+  }
+  /* Inactive panels are `hidden`. The guard is here so a display utility added to the panel
+     later can never quietly show all five at once. */
+  .flow-panel[hidden] { display: none; }
+
+  /* -------------- Home, section 5: the safety model (docs/02 §5; D14) -------------- */
+
+  /* Centred with `margin`, never with a `transform`: GSAP animates `x` on this element and
+     has to be the only writer of its transform. */
+  .safety-pulse {
+    position: absolute; left: 12.5%; top: 50%;
+    width: 0.65rem; height: 0.65rem; margin: -0.325rem 0 0 -0.325rem;
+    border-radius: 999px; background: var(--color-peach-400);
+    box-shadow: 0 0 0 6px rgb(234 163 115 / 0.18);
+    opacity: 0; pointer-events: none;
+  }
+  .safety-node {
+    border: 1px solid rgb(23 61 61 / 0.12); border-radius: 20px;
+    background: var(--color-cream-50);
+  }
+  /* The third node (Booking engine) is the one that decides, so it is the filled one. */
+  .safety-node--on { background: var(--color-peach-400); border-color: transparent; }
+
 }
 
 @keyframes orb-drift {
@@ -357,6 +400,13 @@
   100% { box-shadow: 0 0 0 10px rgb(234 163 115 / 0); }
 }
 
+/* docs/02 §3: the underline fills over exactly one step's worth of time, then the section
+   moves on — the bar and the six seconds are the same animation, so they cannot drift. */
+@keyframes flow-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
 /* Motion safety: one switch, respected everywhere. JS must also check the media query. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -367,4 +417,14 @@
   /* The wall's pulse never runs: GlassWall also refuses to set data-pulse under reduced
      motion, so this is belt and braces (the intro is a scalar for the same reason). */
   .wall-card[data-pulse="true"] .wall-tick { animation: none; }
+
+  /* The flow never advances itself under reduced motion (useFlowTabs reads the same query and
+     never arms), so its underline becomes a static "you are here" mark instead. `!important`
+     because the armed rule is more specific — and because the blanket 0.001ms override above
+     would otherwise fire `animationend` instantly and race through all five steps. */
+  .flow-bar { animation: none !important; }
+  .flow-row .flow-pill[data-active="true"] .flow-bar { transform: scaleX(1); }
+
+  /* The safety pulse is pure motion; there is nothing underneath it to keep. */
+  .safety-pulse { display: none; }
 }

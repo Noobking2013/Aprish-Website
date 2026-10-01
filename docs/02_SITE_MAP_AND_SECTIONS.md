@@ -46,7 +46,7 @@ Section order, background, and what each contains. Copy keys are in `src/content
 
 ### 2. Problem (teal-900, `.on-dark`)
 - Left column: H2 `PROBLEM.h2`, intro, link "See how it works" scrolling to section 3.
-- Right: 2×2 tinted cards (`PROBLEM.cards`). Each card: icon (lucide, `coral-600`), title, body, and a **status chip** from `FEATURES[card.feature].status`. Card fill uses a tint token, text `teal-900`.
+- Right: 2×2 tinted cards (`PROBLEM.cards`). Each card: icon (lucide, `teal-700` — see docs/09 D14), title, body, and a **status chip** from `FEATURES[card.feature].status`. Card fill uses a tint token, text `teal-900`.
 
 ### 3. The flow (cream-100)
 - H2 `FLOW.h2`, intro.

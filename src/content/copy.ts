@@ -22,6 +22,7 @@ export const PROBLEM = {
   h2: "Stop losing patients to front-desk chaos.",
   intro:
     "Phones ring unanswered at peak OPD hours. WhatsApp messages get read late, or after the clinic closes. Waiting rooms fill with people who cannot tell whose turn is next. Aprish takes the repetitive front-desk work off your team.",
+  seeHow: "See how it works", // docs/02 §2: the in-page link down to the flow section.
   cards: [
     { feature: "bookingViaWhatsApp" as FeatureKey, title: "Book slots 24/7, even while you sleep.",
       body: "Patients choose the doctor, the time and the clinic inside WhatsApp. The booking engine locks each slot, so two patients do not end up in the same one." },
@@ -34,9 +35,18 @@ export const PROBLEM = {
   ],
 };
 
+/*
+   HOME, SECTION 3: THE FLOW (docs/02 "Home 3")
+
+   Five steps in a true sequence, so they are numbered 01-05 (docs/01 allows numbering
+   only for real sequences). The labels below are the pill text; the panel shows title +
+   body + the chip for `step.feature`. Back/Next are the manual controls (docs/09 D13).
+*/
 export const FLOW = {
   h2: "Every visit, handled inside the chat.",
   intro: "From the first message to the follow-up, patients stay in an app they already use.",
+  back: "Back",
+  next: "Next",
   steps: [
     { feature: "ariaWhatsApp" as FeatureKey, label: "First contact", title: "One QR code at the desk. Zero crowd at the counter.",
       body: "Patients scan a standee at reception or message your WhatsApp number. No paper register, no app to install, no account to create." },
@@ -73,6 +83,22 @@ export const ROI = {
   h2: "What a no-show costs. What a plan has to earn back.",
   intro: "Enter your own numbers. Nothing here is a promise; it is arithmetic.",
   defaults: { avgFee: 500, noShowsPerDay: 3, workingDays: 26, planPrice: 3000 },
+  /** One label per input, in the order docs/02 §7 lists them. */
+  fields: {
+    avgFee: "Average consultation fee",
+    noShowsPerDay: "No-shows avoided per day",
+    workingDays: "Working days per month",
+    planPrice: "Plan price you are considering",
+  },
+  /** Captions for the two results. The values themselves are computed, never copy. */
+  output: {
+    monthlyValue: "Monthly value of no-shows avoided",
+    breakEven: "Bookings needed to break even",
+  },
+  /** Shown inline under a field that cannot be read as a number. */
+  invalid: "Enter a number, 0 or more",
+  /** Shown in place of the break-even number when the fee is 0 (division would be undefined). */
+  zeroFeePrompt: "Enter your average fee to see the break-even.",
   formulas: {
     monthlyValue: "Monthly value = no-shows avoided per day × working days × average consultation fee",
     breakEven: "Break-even visits = plan price ÷ average fee",
@@ -268,6 +294,22 @@ export const WALL = {
     /** Ends the dialog, after the timeline. Same promise as every card. */
     footer: "Sample data. No real patients.",
   },
+};
+
+/* ------------------------------------------------------------------
+   HOME, SECTION 6: THE WALL TEASER (docs/02 "Home 6", docs/04)
+   A still preview of /live. The H2 and the button label are the only new
+   copy here: the "Sample data" chip reuses WALL.sampleChip and every card
+   reuses the wall's own BookingCardContent, so the teaser can never drift
+   from the live wall. The H2 is plain — serif italic emphasis is hero-only
+   (docs/09 D3).
+------------------------------------------------------------------ */
+
+export const WALL_TEASER = {
+  /** Plain H2 over the preview grid. */
+  h2: "Confirmed bookings, one after another.",
+  /** TLink to /live that sits beside the sample chip. */
+  buttonLabel: "Open the live wall",
 };
 
 /* ------------------------------------------------------------------

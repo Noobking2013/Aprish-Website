@@ -15,6 +15,26 @@ export const STATUS_LABEL: Record<Status, string> = {
   planned: "Planned",
 };
 
+/**
+ * The honest state for anything the founder has not confirmed yet (docs/02 §5 draws it as a
+ * grey chip). It is deliberately NOT a `Status`: a chip is allowed to say "we do not know
+ * yet", but a feature is not — everything in FEATURES must resolve to a real status.
+ */
+export const TBC_STATUS = "tbc" as const;
+export const TBC_LABEL = "To be confirmed";
+
+export type ChipStatus = Status | typeof TBC_STATUS;
+
+/**
+ * Every chip on the site goes through here, so no component ever hard-codes a label.
+ * `null` (the PRIVACY default) is the only way to get the "to be confirmed" chip.
+ */
+export function chipFor(status: Status | null): { status: ChipStatus; label: string } {
+  return status === null
+    ? { status: TBC_STATUS, label: TBC_LABEL }
+    : { status, label: STATUS_LABEL[status] };
+}
+
 export const FEATURES = {
   ariaWhatsApp:        { name: "Aria on WhatsApp",                       status: "live" as Status,     confirmed: true },
   bookingViaWhatsApp:  { name: "Appointments & scheduling via WhatsApp", status: "live" as Status,     confirmed: true },

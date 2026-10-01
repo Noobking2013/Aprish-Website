@@ -38,6 +38,11 @@ Build `/live` completely, plus `BookingDetail`.
 ## Phase 5. Remaining Home sections
 **Read:** `docs/02` (Home 2, 3, 5, 6, 7, 8), `docs/03_CONTENT_AND_CLAIMS.md`
 Problem, Flow, Safety model, wall teaser, ROI calculator, beta CTA, and the working beta form.
+**Progress:** 5a (Problem, Flow, Safety model) and 5b (wall teaser, ROI calculator) are built.
+`scripts/sections.check.ts` checks the sections and `scripts/roi.check.ts` checks the ROI maths;
+`npm run check` runs those plus the wall and detail checks. The beta CTA and the working form are
+still to come. See docs/09 **D13** (the Flow section's clock), **D14** (the safety pulse and the
+Problem icons) and **D15** (the ROI arithmetic and the static wall teaser).
 **Done when:** the form never fakes success, the ROI maths is right (`3 × 26 × ₹500 = ₹39,000`; `₹3,000 ÷ ₹500 = 6 visits`), every status chip reads from `status.ts`.
 
 ## Phase 6. Product, Black, Join, Privacy, 404

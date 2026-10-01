@@ -39,24 +39,24 @@ export interface BookingCardProps {
   onOpen?: (key: string) => void;
 }
 
-function BookingCardBase({ cellKey, booking, cardW, cardH, registerRef, onOpen }: BookingCardProps) {
-  const name = `${booking.first} ${booking.lastInitial}.`;
-  /* Shape fixed by docs/04: "Aarav S., Dr. Mehta, Dermatology, today 4:15 PM, token 14,
-     confirmed. Sample data." — every card states the booking AND that it is sample data. */
-  const label =
-    `${name}, ${booking.doctor}, ${booking.specialty}, ` +
-    `${booking.day.toLowerCase()} ${booking.time}, token ${booking.token}, ` +
-    `confirmed. ${WALL.cardSuffix}`;
+/** "Aarav S." — the display name every card shows and leads its aria-label with. */
+function bookingName(booking: SampleBooking): string {
+  return `${booking.first} ${booking.lastInitial}.`;
+}
+
+/**
+ * The card's contents, without the interactive button. Extracted in Phase 5b so the Home
+ * wall teaser can show the same card as a static, non-interactive div: one source of card
+ * markup means the teaser preview can never drift from the live wall.
+ *
+ * It renders fragments, so dropping it straight into the flex button (or a flex div) keeps
+ * the four rows as direct children and the `justify-between` layout byte-for-byte.
+ */
+export function BookingCardContent({ booking }: { booking: SampleBooking }) {
+  const name = bookingName(booking);
 
   return (
-    <button
-      type="button"
-      ref={(element) => registerRef(cellKey, element)}
-      aria-label={label}
-      className="glass wall-card flex flex-col justify-between px-4 py-3.5 text-left"
-      style={{ width: cardW, height: cardH, transformOrigin: "center", opacity: 0 }}
-      onClick={onOpen ? () => onOpen(cellKey) : undefined}
-    >
+    <>
       <span className="flex items-start justify-between gap-2">
         <span className="flex min-w-0 items-center gap-2">
           <span
@@ -94,6 +94,29 @@ function BookingCardBase({ cellKey, booking, cardW, cardH, registerRef, onOpen }
         <span className="text-[10px] text-sage-300">via WhatsApp</span>
         <span className="data text-[10px] text-sage-300">{booking.id}</span>
       </span>
+    </>
+  );
+}
+
+function BookingCardBase({ cellKey, booking, cardW, cardH, registerRef, onOpen }: BookingCardProps) {
+  const name = bookingName(booking);
+  /* Shape fixed by docs/04: "Aarav S., Dr. Mehta, Dermatology, today 4:15 PM, token 14,
+     confirmed. Sample data." — every card states the booking AND that it is sample data. */
+  const label =
+    `${name}, ${booking.doctor}, ${booking.specialty}, ` +
+    `${booking.day.toLowerCase()} ${booking.time}, token ${booking.token}, ` +
+    `confirmed. ${WALL.cardSuffix}`;
+
+  return (
+    <button
+      type="button"
+      ref={(element) => registerRef(cellKey, element)}
+      aria-label={label}
+      className="glass wall-card flex flex-col justify-between px-4 py-3.5 text-left"
+      style={{ width: cardW, height: cardH, transformOrigin: "center", opacity: 0 }}
+      onClick={onOpen ? () => onOpen(cellKey) : undefined}
+    >
+      <BookingCardContent booking={booking} />
     </button>
   );
 }
