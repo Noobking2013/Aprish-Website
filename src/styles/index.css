@@ -443,3 +443,66 @@
   /* The safety pulse is pure motion; there is nothing underneath it to keep. */
   .safety-pulse { display: none; }
 }
+
+/* ------------------------------ Home v2 primitives (src/ui, src/sections) ------------------------------ */
+@layer components {
+  .chip[data-status="sample"] { background: var(--color-tint-parchment); color: var(--color-teal-800); }
+
+  /* Marquee: two identical halves; the track slides by exactly one half plus half a gap. */
+  .marquee {
+    --marquee-gap: 1rem;
+    --marquee-duration: 40s;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  }
+  .marquee__track { display: flex; width: max-content; gap: var(--marquee-gap); animation: marquee var(--marquee-duration) linear infinite; }
+  .marquee__group { display: flex; flex-shrink: 0; align-items: stretch; gap: var(--marquee-gap); margin: 0; padding: 0; list-style: none; }
+  .marquee[data-reverse="true"] .marquee__track { animation-direction: reverse; }
+  .marquee:hover .marquee__track,
+  .marquee:focus-within .marquee__track,
+  .marquee[data-paused="true"] .marquee__track { animation-play-state: paused; }
+
+  /* Toggle pill and carousel slide: soft UI easing. */
+  .toggle-indicator { transition: transform 0.38s var(--ease-out-soft); box-shadow: 0 8px 18px -10px rgb(23 61 61 / 0.6); }
+  .carousel-track { transition: transform 0.55s var(--ease-out-soft); }
+
+  /* Accordion height: grid rows 0fr -> 1fr animates to the content's real height. */
+  .acc-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.38s var(--ease-out-soft); }
+  .acc-panel[data-open="true"] { grid-template-rows: 1fr; }
+  .acc-panel > div { overflow: hidden; min-height: 0; }
+  .acc-icon { position: relative; transition: background-color 0.2s; }
+  .acc-icon::before, .acc-icon::after {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 11px; height: 1.6px; border-radius: 2px;
+    background: var(--color-teal-900); transform: translate(-50%, -50%); transition: transform 0.3s var(--ease-out-soft);
+  }
+  .acc-icon::after { transform: translate(-50%, -50%) rotate(90deg); }
+  .acc-icon[data-open="true"]::after { transform: translate(-50%, -50%) rotate(0deg); }
+
+  /* Typed ticket caret. */
+  .type-caret { display: inline-block; width: 0.5em; height: 1.05em; margin-left: 1px; vertical-align: -0.15em; background: var(--color-coral-600); animation: caret-blink 1s steps(1) infinite; }
+
+  /* Thin reading-progress line under the navbar. Scaled, never resized, so it never reflows. */
+  .scroll-progress { transform-origin: left center; transform: scaleX(var(--progress, 0)); }
+
+  /* Capability micro-visuals: one soft swap when a value changes. */
+  .swap-in { animation: bubble-enter 0.35s var(--ease-out-soft); }
+
+  /* Sticky mobile action bar. */
+  .mobile-bar { transition: transform 0.4s var(--ease-out-soft), opacity 0.3s; padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+  .mobile-bar[data-visible="false"] { transform: translateY(110%); opacity: 0; }
+
+  /* Native <dialog> for quick search. */
+  .search-dialog::backdrop { background: rgb(13 38 38 / 0.55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+}
+
+@keyframes marquee { to { transform: translateX(calc(-50% - var(--marquee-gap) / 2)); } }
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee { -webkit-mask-image: none; mask-image: none; }
+  .marquee__track { animation: none !important; width: 100%; }
+  .marquee__group[aria-hidden="true"] { display: none; }
+  .marquee__group { flex-wrap: wrap; justify-content: center; width: 100%; }
+  .type-caret, .swap-in { animation: none !important; }
+}

@@ -52,6 +52,20 @@ export const FEATURES = {
 
 export type FeatureKey = keyof typeof FEATURES;
 
+/**
+ * Integrations marquee. `null` renders the To-be-confirmed chip through chipFor.
+ * FOUNDER: set a status only once it is real. A payments provider is deliberately absent:
+ * no source confirms one, and scripts/qa.check.ts forbids those claims site-wide.
+ */
+export const INTEGRATIONS = [
+  { id: "whatsapp", name: "WhatsApp Business", monogram: "WA", status: "live" as Status | null },
+  { id: "gemini",   name: "Gemini (intent only)", monogram: "Ge", status: "live" as Status | null },
+  { id: "gcal",     name: "Google Calendar",   monogram: "GC", status: null as Status | null },
+  { id: "abdm",     name: "ABDM / ABHA",       monogram: "AB", status: null as Status | null },
+  { id: "sms",      name: "SMS fallback",      monogram: "SM", status: null as Status | null },
+  { id: "sheets",   name: "Google Sheets",     monogram: "GS", status: null as Status | null },
+];
+
 export const PRIVACY = [
   // Deck slide 6 strip: all four are [FILL: status]. Render as "To be confirmed" until set.
   { label: "Consent in the first chat",                    status: null as Status | null },

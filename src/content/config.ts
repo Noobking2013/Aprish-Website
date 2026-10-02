@@ -28,4 +28,5 @@ export const SITE = {
   betaSlots: 20,          // FOUNDER: confirm "first 20 clinics" (from the old site brief; not in the deck)
   showPricing: false,     // FOUNDER: deck tiers are marked "confirm they are current". Keep false until confirmed.
   contactEmail: "",       // FOUNDER: fill
+  showIndicativePricing: true, // Home pricing section with placeholder prices, chip-labelled "Indicative".
 } as const;
