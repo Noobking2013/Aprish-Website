@@ -65,6 +65,9 @@
   ::selection { background: rgb(234 163 115 / 0.35); color: var(--color-teal-950); }
   :focus-visible { outline: 2px solid var(--color-coral-600); outline-offset: 3px; border-radius: 6px; }
   .on-dark :focus-visible { outline-color: var(--color-peach-400); }
+  /* The router focuses the page heading (tabindex="-1") after each navigation; that is a
+     script focus, not a keyboard one, so it should not draw a ring around the h1. */
+  [tabindex="-1"]:focus { outline: none; }
   img, svg, canvas { display: block; max-width: 100%; }
 }
 
@@ -166,6 +169,18 @@
 
   /* Ambient motion stops while the phone is off-screen (set by PhoneDemo's observer). */
   .float-soft[data-paused="true"], .pulse-dot[data-paused="true"] { animation-play-state: paused; }
+
+  /* #route-root owns a stacking context so route content can never paint over the chrome.
+     The wall writes an inline `z-index` of up to 130 onto every card (GlassWall); without
+     this, a static `z-index: auto` #route-root lets those cards land in <body>'s stacking
+     context ABOVE the menu (80) and the stairs (90) — which is why they covered the menu
+     when it was reopened on /live. `isolation: isolate` makes the stacking context and,
+     unlike a transient `transform`, survives the page-enter tween's clearProps. The
+     booking dialog is portalled to <body> (z-70), so it is unaffected.
+     `aria-busy` is set here by useStairs while a transition is in flight; a click then
+     reads as disabled instead of being silently dropped by the busy guard. */
+  #route-root { isolation: isolate; }
+  #route-root[aria-busy="true"] { pointer-events: none; cursor: progress; }
 
   /* Route / nav stairs (see docs/05_TRANSITIONS_SPEC.md) */
   .stairs { position: fixed; inset: 0; z-index: 90; display: none; pointer-events: none; }

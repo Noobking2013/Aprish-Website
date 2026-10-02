@@ -17,14 +17,9 @@ export function useNavTheme(): NavTheme {
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
 
-    // Re-queried per route: the sections only exist once the page has committed.
-    const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-nav-theme]"));
-    if (sections.length === 0) {
-      setTheme("light");
-      return;
-    }
-
+    let sections: HTMLElement[] = [];
     const intersecting = new Set<Element>();
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -40,8 +35,33 @@ export function useNavTheme(): NavTheme {
       { rootMargin: "0px 0px -92% 0px", threshold: 0 },
     );
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
+    /* Re-query whenever the route root mutates rather than once per route: a lazy page's
+       sections (and the whole Suspense fallback -> content swap) mount after this effect
+       first runs, so observing only the initial set would miss them entirely. */
+    const scan = () => {
+      const found = Array.from(document.querySelectorAll<HTMLElement>("[data-nav-theme]"));
+      const unchanged =
+        found.length === sections.length && found.every((el, i) => el === sections[i]);
+      if (unchanged) return;
+
+      sections.forEach((section) => observer.unobserve(section));
+      intersecting.clear();
+      sections = found;
+      sections.forEach((section) => observer.observe(section));
+
+      if (sections.length === 0) setTheme("light");
+    };
+
+    scan();
+
+    const root = document.getElementById("route-root") ?? document.body;
+    const mutations = new MutationObserver(scan);
+    mutations.observe(root, { childList: true, subtree: true });
+
+    return () => {
+      mutations.disconnect();
+      observer.disconnect();
+    };
   }, [pathname]);
 
   return theme;

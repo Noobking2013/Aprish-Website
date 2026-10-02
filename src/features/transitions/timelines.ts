@@ -61,8 +61,12 @@ export function buildCover(bars: HTMLElement[], label: HTMLElement | null): gsap
 }
 
 /** Bars step away downwards; resets them to height 0 so the overlay can be hidden. */
-export function buildReveal(bars: HTMLElement[], label: HTMLElement | null): gsap.core.Timeline {
-  const timeline = gsap.timeline();
+export function buildReveal(
+  bars: HTMLElement[],
+  label: HTMLElement | null,
+  paused = false,
+): gsap.core.Timeline {
+  const timeline = gsap.timeline({ paused });
 
   if (label) {
     timeline.to(label, { opacity: 0, y: -12, duration: LABEL_OUT_DURATION, ease: "power2.in" }, 0);

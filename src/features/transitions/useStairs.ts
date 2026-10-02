@@ -16,6 +16,10 @@ import {
 import type { TransitionContextValue } from "./useTransition";
 
 const FONT_LOAD_TIMEOUT_MS = 1200;
+/* Hard ceiling on a single transition. If a cover/reveal pair has still not settled by
+   then — a dropped rAF, a chunk that never resolves, any race we have not foreseen — the
+   state machine is forced back to rest, so the bars can never stay covering the site. */
+const TRANSITION_WATCHDOG_MS = 8000;
 
 function nextFrame(): Promise<void> {
   return new Promise((resolve) => {
@@ -61,6 +65,10 @@ export function useStairs(): StairsState {
   const previousPathRef = useRef<string | null>(null);
   const revealDoneRef = useRef(true);
   const animationsRef = useRef<gsap.core.Animation[]>([]);
+  /* The in-flight `go`, so a browser back/forward can cancel it instead of racing it. */
+  const pendingRef = useRef<{ cancelled: boolean } | null>(null);
+  /* Last-resort timer that forces a stuck transition to settle (see resetTransition). */
+  const watchdogRef = useRef<gsap.core.Tween | null>(null);
 
   const prefersReducedMotion = usePrefersReducedMotion();
   const navigate = useNavigate();
@@ -91,8 +99,44 @@ export function useStairs(): StairsState {
     return () => {
       animations.forEach((animation) => animation.kill());
       animations.length = 0;
+      watchdogRef.current?.kill();
+      watchdogRef.current = null;
     };
   }, []);
+
+  /** Cancel the last-resort watchdog — a normal settle always disarms it. */
+  const disarmWatchdog = useCallback(() => {
+    watchdogRef.current?.kill();
+    watchdogRef.current = null;
+  }, []);
+
+  /**
+   * Force the transition state machine back to rest: cancel the in-flight `go` (its
+   * cover/reveal tweens and the not-yet-fired navigate), release the scroll lock and take
+   * the bars down. Browser back/forward cannot be intercepted, so the POP handler calls
+   * this first — the user's navigation wins and a half-finished transition can never leave
+   * `busyRef` or the overlay stuck (which is what froze the site).
+   */
+  const resetTransition = useCallback(() => {
+    disarmWatchdog();
+    if (pendingRef.current) {
+      pendingRef.current.cancelled = true;
+      pendingRef.current = null;
+    }
+    animationsRef.current.forEach((animation) => animation.kill());
+    animationsRef.current.length = 0;
+    if (overlayRef.current) gsap.set(overlayRef.current, { opacity: 1 });
+    busyRef.current = false;
+    setIsBusy(false);
+    setOverlayActive(false);
+    unlockScroll();
+  }, [disarmWatchdog]);
+
+  /** Arm the last-resort watchdog for the transition that is about to start. */
+  const armWatchdog = useCallback(() => {
+    watchdogRef.current?.kill();
+    watchdogRef.current = gsap.delayedCall(TRANSITION_WATCHDOG_MS / 1000, resetTransition);
+  }, [resetTransition]);
 
   const openMenu = useCallback(() => setMenuOpen(true), []);
 
@@ -105,13 +149,18 @@ export function useStairs(): StairsState {
     [track],
   );
 
-  const finish = useCallback((to: string) => {
-    setAnnouncement(`${routeName(to)} page`);
-    focusRouteTitle();
-    unlockScroll();
-    busyRef.current = false;
-    setIsBusy(false);
-  }, []);
+  const finish = useCallback(
+    (to: string) => {
+      disarmWatchdog();
+      pendingRef.current = null;
+      setAnnouncement(`${routeName(to)} page`);
+      focusRouteTitle();
+      unlockScroll();
+      busyRef.current = false;
+      setIsBusy(false);
+    },
+    [disarmWatchdog],
+  );
 
   const go = useCallback(
     (to: string, opts?: { fromMenu?: boolean }) => {
@@ -125,16 +174,37 @@ export function useStairs(): StairsState {
       if (!overlay) return;
 
       setLabelText(routeName(to));
+      armWatchdog();
 
       /* Menu link: the menu bars already cover the screen, so the close timeline IS
          the reveal and a second cover must not run. */
       if (fromMenu) {
+        // Already on this page: just close the menu, do not replay a page-enter on it.
+        if (to === pathname) {
+          disarmWatchdog();
+          closeMenu();
+          return;
+        }
+
         busyRef.current = true;
         setIsBusy(true);
-        navigate(to);
-        closeMenu({ returnFocus: false });
-        track(buildPageEnter(getRouteRoot(), PAGE_ENTER_DELAY));
-        track(gsap.delayedCall(MENU_CLOSE_TOTAL, () => finish(to)));
+        lockScroll(); // balances the unlockScroll() in finish()
+
+        const pending = { cancelled: false };
+        pendingRef.current = pending;
+
+        // Never swap routes before the chunk is ready: the menu bars keep covering the
+        // screen while a slow lazy chunk loads.
+        void preload(to)
+          .catch(() => undefined)
+          .then(() => {
+            if (pending.cancelled) return;
+            navigate(to);
+            window.scrollTo(0, 0); // the menu path used to land mid-page
+            closeMenu({ returnFocus: false });
+            track(buildPageEnter(getRouteRoot(), PAGE_ENTER_DELAY));
+            track(gsap.delayedCall(MENU_CLOSE_TOTAL, () => finish(to)));
+          });
         return;
       }
 
@@ -146,21 +216,27 @@ export function useStairs(): StairsState {
         setOverlayActive(true);
         gsap.set(overlay, { opacity: 0 });
 
+        const pending = { cancelled: false };
+        pendingRef.current = pending;
+
         track(
           gsap.to(overlay, {
             opacity: 1,
             duration: REDUCED_FADE_DURATION,
             ease: "power1.out",
             onComplete: () => {
+              if (pending.cancelled) return;
               navigate(to);
               window.scrollTo(0, 0);
               void nextFrame().then(() => {
+                if (pending.cancelled) return;
                 track(
                   gsap.to(overlay, {
                     opacity: 0,
                     duration: REDUCED_FADE_DURATION,
                     ease: "power1.in",
                     onComplete: () => {
+                      if (pending.cancelled) return;
                       gsap.set(overlay, { opacity: 1 });
                       setOverlayActive(false);
                       finish(to);
@@ -180,38 +256,49 @@ export function useStairs(): StairsState {
       lockScroll();
       setOverlayActive(true);
 
+      // Cancellable: a back/forward mid-flight aborts this run instead of racing it.
+      const pending = { cancelled: false };
+      pendingRef.current = pending;
+
       // Warm the chunk immediately, in parallel with the cover.
       const chunkReady = preload(to);
       const cover = buildCover(bars(), labelRef.current);
-      const reveal = buildReveal(bars(), labelRef.current);
+      // Built paused so the bars are already covering when the route swaps beneath them.
+      const reveal = buildReveal(bars(), labelRef.current, true);
       track(cover);
       track(reveal);
 
+      const settle = () => {
+        if (pendingRef.current === pending) pendingRef.current = null;
+        setOverlayActive(false);
+        finish(to);
+      };
+
       cover.eventCallback("onComplete", () => {
+        if (pending.cancelled) return;
         void Promise.all([chunkReady, nextFrame()])
           .then(() => {
+            if (pending.cancelled) return;
             navigate(to);
             window.scrollTo(0, 0);
             return nextFrame();
           })
           .then(() => {
+            if (pending.cancelled) return;
             track(buildPageEnter(getRouteRoot(), PAGE_ENTER_DELAY));
-            reveal.eventCallback("onComplete", () => {
-              setOverlayActive(false);
-              finish(to);
-            });
+            reveal.eventCallback("onComplete", settle);
             reveal.play();
           })
           .catch(() => {
             // A failed chunk must never leave the visitor stuck under the bars.
-            setOverlayActive(false);
-            finish(to);
+            if (pending.cancelled) return;
+            settle();
           });
       });
 
       cover.play();
     },
-    [bars, closeMenu, finish, navigate, pathname, prefersReducedMotion, track],
+    [armWatchdog, bars, closeMenu, disarmWatchdog, finish, navigate, pathname, prefersReducedMotion, track],
   );
 
   /* First load: the site loads behind its own loader. The bars are already
@@ -266,6 +353,12 @@ export function useStairs(): StairsState {
     { scope: rootRef, dependencies: [prefersReducedMotion, bars] },
   );
 
+  /* Keep the last-revealed path in step with PUSH navigations too: without this,
+     / -> /join (PUSH) then Back compares with a stale path and skips the reveal. */
+  useEffect(() => {
+    if (navigationType !== "POP") previousPathRef.current = pathname;
+  }, [pathname, navigationType]);
+
   /* Browser back / forward cannot be intercepted, so they get a reveal-only pass. */
   useGSAP(
     () => {
@@ -276,6 +369,11 @@ export function useStairs(): StairsState {
       const resumingInterruptedReveal = !isNewPath && !revealDoneRef.current;
       previousPathRef.current = pathname;
       if (!isNewPath && !resumingInterruptedReveal) return;
+
+      /* The user's back/forward must win: abort any `go` still mid-flight (its pending
+         navigate and its bars) and clear the busy/scroll state before revealing, so a
+         half-finished transition can never freeze the site. */
+      resetTransition();
 
       // Warm a lazy chunk on the way back in; a POP navigation cannot be awaited.
       void preload(pathname);
@@ -313,7 +411,7 @@ export function useStairs(): StairsState {
         if (!revealDoneRef.current) previousPathRef.current = null;
       };
     },
-    { scope: rootRef, dependencies: [pathname, navigationType, prefersReducedMotion, bars] },
+    { scope: rootRef, dependencies: [pathname, navigationType, prefersReducedMotion, bars, resetTransition] },
   );
 
   /* Lock scrolling while the menu is open (reference-counted with the transition). */
@@ -332,6 +430,18 @@ export function useStairs(): StairsState {
       root.inert = false;
     };
   }, [menuOpen]);
+
+  /* Reflect the in-flight transition on #route-root. `aria-busy` is the a11y signal;
+     index.css also reads it to make route content visibly non-interactive, so a click
+     during a transition reads as disabled rather than being silently dropped. */
+  useEffect(() => {
+    const root = getRouteRoot();
+    if (!root) return;
+    root.setAttribute("aria-busy", String(isBusy));
+    return () => {
+      root.removeAttribute("aria-busy");
+    };
+  }, [isBusy]);
 
   const api = useMemo<TransitionContextValue>(
     () => ({ go, menuOpen, openMenu, closeMenu, isBusy, menuButtonRef }),

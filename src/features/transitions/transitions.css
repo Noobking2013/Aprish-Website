@@ -84,6 +84,9 @@
   color: var(--color-cream-100);
 }
 .menu-dialog[data-open="true"] { display: flex; }
+/* While closing, drop the solid backdrop so the retreating bars reveal the page beneath
+   instead of leaving a teal rectangle on screen. */
+.menu-dialog[data-closing="true"] { background: transparent; }
 
 /* Menu button: two right-aligned lines whose colour follows the section behind it. */
 .menu-button .menu-button-line { background: var(--color-cream-100); }
@@ -110,7 +113,7 @@
 @media (hover: hover) {
   .menu-band { display: flex; }
   .menu-row:hover .menu-band,
-  .menu-row:focus-within .menu-band { opacity: 1; }
+  .menu-row:has(:focus-visible) .menu-band { opacity: 1; }
 }
 
 .marquee { animation: marquee-move 10s linear infinite; }

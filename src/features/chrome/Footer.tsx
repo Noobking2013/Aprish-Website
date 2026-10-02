@@ -25,12 +25,12 @@ export function Footer() {
             <h2 className="data text-[0.7rem] tracking-[0.18em] text-sage-300 uppercase">
               {group.title}
             </h2>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-1">
               {group.links.map((link) => (
                 <li key={link.to}>
                   <TLink
                     to={link.to}
-                    className="text-sm text-cream-100/90 transition-colors hover:text-peach-300"
+                    className="inline-flex min-h-10 items-center text-sm text-cream-100/90 transition-colors hover:text-peach-300"
                   >
                     {link.label}
                   </TLink>

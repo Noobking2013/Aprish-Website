@@ -14,7 +14,9 @@
  *   B. no hard-coded status labels outside src/content/status.ts;
  *   C. every public PNG is under 100KB;
  *   D. index.html carries the head/SEO tags the checklist and Lighthouse need;
- *   E. every route renders exactly one <h1> and never skips a heading level.
+ *   E. every route renders exactly one <h1> and never skips a heading level;
+ *   F. the layering contract (#route-root contains the wall's inline z-index so the menu
+ *      is never covered) and the transition busy guard (aria-busy + a reset path).
  *
  * The interactive and visual items (Lighthouse numbers, keyboard-only, screen reader,
  * Safari, responsive widths) cannot be decided here; they are run by hand and recorded in
@@ -206,6 +208,41 @@ for (const [path, name, render] of routes) {
   }
   console.log(`${name.padEnd(8)} (${path})  headings: ${levels.join(", ")}`);
 }
+
+/* ------------- F. layering + transition busy guard (navigation bug fixes) ------------- */
+
+/*
+ * The wall writes an inline `z-index` of up to 130 onto every card (GlassWall), and
+ * #route-root is a plain static div (`z-index: auto`), so those cards would land in
+ * <body>'s stacking context ABOVE the menu (80) and the stairs (90) — they covered the
+ * menu when it was reopened on /live. `isolation: isolate` on #route-root creates the
+ * stacking context that holds them below the chrome and survives the page-enter tween's
+ * clearProps. Asserted at the source so the contract cannot regress.
+ */
+const layoutCss = readFileSync("src/styles/index.css", "utf8");
+ok(
+  /#route-root\s*\{[^}]*isolation:\s*isolate/.test(layoutCss),
+  "#route-root must set `isolation: isolate` so the wall cards (inline z-index up to 130) cannot paint over the menu (80) / stairs (90)",
+);
+ok(
+  /#route-root\[aria-busy="true"\]/.test(layoutCss),
+  "#route-root must react to aria-busy so a click during a transition reads as disabled",
+);
+
+/*
+ * A transition that never settles is what froze the site: `busyRef` stays true and the
+ * bars keep covering the page. useStairs must keep its reset path, the watchdog that
+ * forces a stuck transition to settle, and the aria-busy reflection on the DOM.
+ */
+const stairsSrc = readFileSync("src/features/transitions/useStairs.ts", "utf8");
+ok(
+  stairsSrc.includes("const resetTransition") && stairsSrc.includes("const armWatchdog"),
+  "useStairs must keep resetTransition + armWatchdog so a stuck transition can never freeze the site",
+);
+ok(
+  stairsSrc.includes('setAttribute("aria-busy"'),
+  "useStairs must reflect the in-flight transition on #route-root via aria-busy",
+);
 
 console.log(fails ? `${fails} FAILURES` : "ALL PASS");
 process.exit(fails ? 1 : 0);

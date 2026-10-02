@@ -84,7 +84,14 @@ export function BetaForm() {
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       setAttempted(true);
-      if (hasErrors(errors)) return;
+      if (hasErrors(errors)) {
+        // The errors render on the next paint; then take the user straight to the first one.
+        const form = event.currentTarget;
+        requestAnimationFrame(() => {
+          form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+        });
+        return;
+      }
 
       setStatus("sending");
       const result = await submitBeta(values, { endpoint: FORM_ENDPOINT, fetch, waLink });

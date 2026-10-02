@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useLocation } from "react-router-dom";
@@ -63,6 +63,14 @@ export function FullScreenMenu() {
   const dialogRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
 
+  /* Held true for the length of the close timeline so the dialog stays mounted while the
+     bars animate out; `menuOpen` alone would hide it the instant it flips to false. */
+  const [closing, setClosing] = useState(false);
+  /* Prior open state and the path the menu was opened on, so a browser back/forward under
+     an open menu can be told apart from a menu-link navigation. */
+  const wasOpenRef = useRef(false);
+  const openedAtRef = useRef<string | null>(null);
+
   /* Open / close timelines. The scope keeps the queries inside this dialog, so
      the route overlay's own .stair elements are never touched. */
   useGSAP(
@@ -82,11 +90,32 @@ export function FullScreenMenu() {
         };
       }
 
+      // First mount already has menuOpen false — there is nothing to close yet.
+      if (!wasOpenRef.current) return;
+
+      setClosing(true);
       const timeline = buildMenuClose(bars, links, headerRef.current);
+      timeline.eventCallback("onComplete", () => setClosing(false));
       return () => timeline.kill();
     },
     { scope: dialogRef, dependencies: [menuOpen] },
   );
+
+  /* Track the prior open state (this layout effect runs before the one below, so it still
+     sees the previous value), and close the dialog when the route changes while it is open:
+     otherwise the browser's back/forward leaves a full-screen dialog over the visited page. */
+  useEffect(() => {
+    if (menuOpen) {
+      if (openedAtRef.current === null) openedAtRef.current = pathname;
+      else if (openedAtRef.current !== pathname) closeMenu();
+    } else {
+      openedAtRef.current = null;
+    }
+    wasOpenRef.current = menuOpen;
+  }, [menuOpen, pathname, closeMenu]);
+
+  /* Re-opening before the close finished: drop the fade immediately. */
+  if (menuOpen && closing) setClosing(false);
 
   /* Escape closes; Tab cycles inside the dialog only. */
   useEffect(() => {
@@ -133,7 +162,8 @@ export function FullScreenMenu() {
       id="site-menu"
       ref={dialogRef}
       className="menu-dialog"
-      data-open={menuOpen ? "true" : "false"}
+      data-open={menuOpen || closing ? "true" : "false"}
+      data-closing={closing && !menuOpen ? "true" : undefined}
       role="dialog"
       aria-modal="true"
       aria-label={NAV.menuDialogLabel}
